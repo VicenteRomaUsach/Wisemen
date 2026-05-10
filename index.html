@@ -34,34 +34,20 @@
     }
 
     header {
-      height: 74px;
-      padding: 10px 24px;
+      height: 58px;
+      padding: 8px 24px;
       background: #111827;
-      color: white;
       border-bottom: 6px solid #facc15;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 25px;
-      letter-spacing: 0.4px;
-    }
-
-    header p {
-      margin: 4px 0 0;
-      font-size: 14px;
-      color: #fef3c7;
-      font-weight: 700;
+      justify-content: center;
     }
 
     .toolbar {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     button {
@@ -82,7 +68,7 @@
 
     #canvas {
       width: 100vw;
-      height: calc(100vh - 74px);
+      height: calc(100vh - 58px);
       overflow: auto;
       background:
         linear-gradient(rgba(17, 24, 39, 0.07) 2px, transparent 2px),
@@ -230,33 +216,16 @@
     }
 
     @media print {
-      body {
-        overflow: visible;
-      }
-
-      header {
-        display: none;
-      }
-
-      #canvas {
-        overflow: visible;
-        height: 1480px;
-      }
-
-      .node {
-        box-shadow: none;
-      }
+      body { overflow: visible; }
+      header { display: none; }
+      #canvas { overflow: visible; height: 1480px; }
+      .node { box-shadow: none; }
     }
   </style>
 </head>
 
 <body>
   <header>
-    <div>
-      <h1>Mapa conceptual: SmartBook X</h1>
-      <p>Producto → Tipo de consumidor → Respuesta → Nivel de decisión | Campaña + Ética</p>
-    </div>
-
     <div class="toolbar">
       <button onclick="expandAll()">Expandir todo</button>
       <button onclick="collapseAll()">Contraer todo</button>
@@ -433,37 +402,37 @@
         </div>
       </article>
 
-<article id="img-economico" class="node image-card" style="left:80px; top:1035px;">
-  <div class="head">Imagen: económico</div>
-  <div class="body">
-    <img class="concept-img" src="./hombre-economico.jpg" alt="Hombre económico" />
-    <div class="img-caption">Datos, comparación y precio real.</div>
-  </div>
-</article>
+      <article id="img-economico" class="node image-card" style="left:80px; top:1035px;">
+        <div class="head">Imagen: económico</div>
+        <div class="body">
+          <img class="concept-img" src="./hombre-economico.jpg" alt="Hombre económico" />
+          <div class="img-caption">Datos, comparación y precio real.</div>
+        </div>
+      </article>
 
-<article id="img-pasivo" class="node image-card" style="left:420px; top:1035px;">
-  <div class="head">Imagen: pasivo</div>
-  <div class="body">
-    <img class="concept-img" src="./hombre-pasivo.jpg" alt="Hombre pasivo" />
-    <div class="img-caption">Promoción visible y beneficio inmediato.</div>
-  </div>
-</article>
+      <article id="img-pasivo" class="node image-card" style="left:420px; top:1035px;">
+        <div class="head">Imagen: pasivo</div>
+        <div class="body">
+          <img class="concept-img" src="./hombre-pasivo.jpg" alt="Hombre pasivo" />
+          <div class="img-caption">Promoción visible y beneficio inmediato.</div>
+        </div>
+      </article>
 
-<article id="img-cognoscitivo" class="node image-card" style="left:1120px; top:1035px;">
-  <div class="head">Imagen: cognoscitivo</div>
-  <div class="body">
-    <img class="concept-img" src="./hombre-cognoscitivo.jpg" alt="Hombre cognoscitivo" />
-    <div class="img-caption">Pruebas, reviews y validación.</div>
-  </div>
-</article>
+      <article id="img-cognoscitivo" class="node image-card" style="left:1120px; top:1035px;">
+        <div class="head">Imagen: cognoscitivo</div>
+        <div class="body">
+          <img class="concept-img" src="./hombre-cognoscitivo.jpg" alt="Hombre cognoscitivo" />
+          <div class="img-caption">Pruebas, reviews y validación.</div>
+        </div>
+      </article>
 
-<article id="img-emocional" class="node image-card" style="left:1460px; top:1035px;">
-  <div class="head">Imagen: emocional</div>
-  <div class="body">
-    <img class="concept-img" src="./hombre-emocional.jpg" alt="Hombre emocional" />
-    <div class="img-caption">Aspiración, futuro y estatus.</div>
-  </div>
-</article>
+      <article id="img-emocional" class="node image-card" style="left:1460px; top:1035px;">
+        <div class="head">Imagen: emocional</div>
+        <div class="body">
+          <img class="concept-img" src="./hombre-emocional.jpg" alt="Hombre emocional" />
+          <div class="img-caption">Aspiración, futuro y estatus.</div>
+        </div>
+      </article>
 
       <article id="etica" class="node ethics" style="left:760px; top:1195px;">
         <div class="head">Ética del neuromarketing</div>
@@ -487,32 +456,26 @@
       ["producto", "pasivo", "line"],
       ["producto", "cognoscitivo", "line"],
       ["producto", "emocional", "line"],
-
       ["economico", "resp-economico", "line"],
       ["pasivo", "resp-pasivo", "line"],
       ["cognoscitivo", "resp-cognoscitivo", "line"],
       ["emocional", "resp-emocional", "line"],
-
       ["resp-economico", "nivel-economico", "line"],
       ["resp-pasivo", "nivel-pasivo", "line"],
       ["resp-cognoscitivo", "nivel-cognoscitivo", "line"],
       ["resp-emocional", "nivel-emocional", "line"],
-
       ["campana", "key-economico", "line campaign-link"],
       ["campana", "key-pasivo", "line campaign-link"],
       ["campana", "key-cognoscitivo", "line campaign-link"],
       ["campana", "key-emocional", "line campaign-link"],
-
       ["economico", "key-economico", "line campaign-link"],
       ["pasivo", "key-pasivo", "line campaign-link"],
       ["cognoscitivo", "key-cognoscitivo", "line campaign-link"],
       ["emocional", "key-emocional", "line campaign-link"],
-
       ["key-economico", "img-economico", "line campaign-link"],
       ["key-pasivo", "img-pasivo", "line campaign-link"],
       ["key-cognoscitivo", "img-cognoscitivo", "line campaign-link"],
       ["key-emocional", "img-emocional", "line campaign-link"],
-
       ["etica", "campana", "line ethics-link"],
       ["etica", "key-economico", "line ethics-link"],
       ["etica", "key-pasivo", "line ethics-link"],
@@ -525,10 +488,7 @@
     const defaultPositions = {};
 
     document.querySelectorAll(".node").forEach((node) => {
-      defaultPositions[node.id] = {
-        left: node.style.left,
-        top: node.style.top
-      };
+      defaultPositions[node.id] = { left: node.style.left, top: node.style.top };
 
       let dragging = false;
       let moved = false;
@@ -555,16 +515,13 @@
 
         node.style.left = `${x}px`;
         node.style.top = `${y}px`;
-
         drawConnections();
       });
 
       node.addEventListener("pointerup", (event) => {
         dragging = false;
         node.releasePointerCapture(event.pointerId);
-        setTimeout(() => {
-          node.style.zIndex = 2;
-        }, 80);
+        setTimeout(() => { node.style.zIndex = 2; }, 80);
       });
 
       node.addEventListener("click", () => {
@@ -587,17 +544,15 @@
       links.forEach(([fromId, toId, className]) => {
         const from = document.getElementById(fromId);
         const to = document.getElementById(toId);
-
         if (!from || !to) return;
 
         const start = center(from);
         const end = center(to);
         const middleY = (start.y + end.y) / 2;
-
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
         path.setAttribute("d", `M ${start.x} ${start.y} C ${start.x} ${middleY}, ${end.x} ${middleY}, ${end.x} ${end.y}`);
         path.setAttribute("class", className);
-
         svg.appendChild(path);
       });
     }
