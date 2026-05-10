@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mapa Conceptual SmartBook X</title>
+
   <style>
     :root {
       --bg: #fffdf2;
@@ -19,15 +20,6 @@
       --soft: #ffffff;
       --shadow: rgba(0, 0, 0, 0.25);
     }
-
-    /*
-      CAMBIO DE IMÁGENES:
-      Reemplaza el atributo src="..." de cada imagen en el HTML.
-      Ejemplos para tu proyecto de GitHub:
-      src="./assets/hombre-economico.png"
-      src="./img/hombre-pasivo.jpg"
-      src="https://usuario.github.io/repositorio/assets/hombre-emocional.png"
-    */
 
     * {
       box-sizing: border-box;
@@ -53,7 +45,7 @@
       gap: 16px;
     }
 
-    header h1 {
+    h1 {
       margin: 0;
       font-size: 25px;
       letter-spacing: 0.4px;
@@ -69,7 +61,6 @@
     .toolbar {
       display: flex;
       gap: 10px;
-      align-items: center;
       flex-wrap: wrap;
     }
 
@@ -90,7 +81,6 @@
     }
 
     #canvas {
-      position: relative;
       width: 100vw;
       height: calc(100vh - 74px);
       overflow: auto;
@@ -105,10 +95,9 @@
       position: relative;
       width: 1900px;
       height: 1480px;
-      margin: 0;
     }
 
-    svg#connections {
+    #connections {
       position: absolute;
       inset: 0;
       width: 1900px;
@@ -124,14 +113,14 @@
       opacity: 0.82;
     }
 
-    .line.campaign-link {
-      stroke: #047857;
+    .campaign-link {
+      stroke: var(--campaign);
       stroke-width: 5;
       stroke-dasharray: 9 8;
     }
 
-    .line.ethics-link {
-      stroke: #334155;
+    .ethics-link {
+      stroke: var(--ethics);
       stroke-width: 5;
       stroke-dasharray: 3 8;
     }
@@ -154,35 +143,35 @@
       cursor: grabbing;
     }
 
-    .node .head {
+    .head {
       padding: 12px 14px;
       color: white;
       font-weight: 900;
       font-size: 18px;
       line-height: 1.15;
       border-bottom: 4px solid #111827;
+      background: #111827;
     }
 
-    .node .body {
+    .body {
       padding: 11px 14px 14px;
       font-size: 15px;
       line-height: 1.35;
       font-weight: 700;
     }
 
-    .node .more {
+    .more {
       display: none;
       margin-top: 8px;
       padding-top: 8px;
       border-top: 3px dashed #334155;
-      font-weight: 700;
     }
 
-    .node.expanded .more {
+    .expanded .more {
       display: block;
     }
 
-    .node small {
+    small {
       display: block;
       margin-top: 8px;
       color: #374151;
@@ -200,6 +189,14 @@
       font-weight: 900;
     }
 
+    .product { width: 330px; min-height: 115px; }
+    .campaign { width: 360px; }
+    .ethics { width: 360px; outline: 8px solid rgba(51, 65, 85, 0.22); }
+    .key { width: 300px; }
+    .level { width: 230px; }
+    .response { width: 280px; }
+    .image-card { width: 250px; min-height: 245px; }
+
     .product .head { background: var(--product); }
     .economic .head { background: var(--economic); }
     .passive .head { background: var(--passive); }
@@ -209,40 +206,6 @@
     .ethics .head { background: var(--ethics); }
     .level .head { background: #7c2d12; }
     .response .head { background: #374151; }
-    .key .head { background: #111827; }
-    .image-card .head { background: #111827; }
-
-    .product {
-      width: 330px;
-      min-height: 115px;
-    }
-
-    .campaign {
-      width: 360px;
-    }
-
-    .ethics {
-      width: 360px;
-      border-color: #0f172a;
-      outline: 8px solid rgba(51, 65, 85, 0.22);
-    }
-
-    .key {
-      width: 300px;
-    }
-
-    .level {
-      width: 230px;
-    }
-
-    .response {
-      width: 280px;
-    }
-
-    .image-card {
-      width: 250px;
-      min-height: 220px;
-    }
 
     .image-card .body {
       padding: 10px;
@@ -250,11 +213,11 @@
 
     .concept-img {
       width: 100%;
-      height: 135px;
-      object-fit: cover;
+      height: 160px;
+      object-fit: contain;
       border: 4px solid #111827;
       border-radius: 14px;
-      background: #e5e7eb;
+      background: #f8fafc;
       display: block;
     }
 
@@ -266,36 +229,34 @@
       color: #111827;
     }
 
-    .note {
-      position: absolute;
-      z-index: 3;
-      left: 24px;
-      top: 1360px;
-      width: 960px;
-      background: #fef3c7;
-      border: 4px solid #92400e;
-      border-radius: 18px;
-      padding: 14px 18px;
-      font-size: 16px;
-      font-weight: 800;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.18);
-    }
-
     @media print {
-      body { overflow: visible; }
-      header { display: none; }
-      #canvas { overflow: visible; height: 1480px; }
-      .node { box-shadow: none; }
-      .note { box-shadow: none; }
+      body {
+        overflow: visible;
+      }
+
+      header {
+        display: none;
+      }
+
+      #canvas {
+        overflow: visible;
+        height: 1480px;
+      }
+
+      .node {
+        box-shadow: none;
+      }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div>
       <h1>Mapa conceptual: SmartBook X</h1>
       <p>Producto → Tipo de consumidor → Respuesta → Nivel de decisión | Campaña + Ética</p>
     </div>
+
     <div class="toolbar">
       <button onclick="expandAll()">Expandir todo</button>
       <button onclick="collapseAll()">Contraer todo</button>
@@ -307,7 +268,6 @@
     <section id="workspace">
       <svg id="connections"></svg>
 
-      <!-- PRODUCTO CENTRAL -->
       <article id="producto" class="node product" style="left:760px; top:80px;">
         <div class="head">Producto: Notebook SmartBook X</div>
         <div class="body">
@@ -322,7 +282,6 @@
         </div>
       </article>
 
-      <!-- TIPOS DE HOMBRE -->
       <article id="economico" class="node economic" style="left:150px; top:260px;">
         <div class="head">Hombre económico</div>
         <div class="body">
@@ -367,14 +326,11 @@
         </div>
       </article>
 
-      <!-- RESPUESTAS A PREGUNTAS -->
       <article id="resp-economico" class="node response" style="left:130px; top:455px;">
         <div class="head">Respuesta clave</div>
         <div class="body">
           “¿Vale más por lo que cuesta?”
-          <div class="more">
-            Compara rendimiento, precio real, batería y peso frente a otras marcas.
-          </div>
+          <div class="more">Compara rendimiento, precio real, batería y peso frente a otras marcas.</div>
         </div>
       </article>
 
@@ -382,9 +338,7 @@
         <div class="head">Respuesta clave</div>
         <div class="body">
           “La oferta me conviene ahora.”
-          <div class="more">
-            Promoción directa: mochila + Office gratis + anuncios repetidos.
-          </div>
+          <div class="more">Promoción directa: mochila + Office gratis + anuncios repetidos.</div>
         </div>
       </article>
 
@@ -392,9 +346,7 @@
         <div class="head">Respuesta clave</div>
         <div class="body">
           “Necesito comprobarlo.”
-          <div class="more">
-            Busca pruebas, reviews, benchmarks y validación de especialistas.
-          </div>
+          <div class="more">Busca pruebas, reviews, benchmarks y validación de especialistas.</div>
         </div>
       </article>
 
@@ -402,20 +354,15 @@
         <div class="head">Respuesta clave</div>
         <div class="body">
           “Me acerca a mi futuro.”
-          <div class="more">
-            Lo asocia con metas, imagen personal, éxito y vida profesional.
-          </div>
+          <div class="more">Lo asocia con metas, imagen personal, éxito y vida profesional.</div>
         </div>
       </article>
 
-      <!-- NIVELES DE DECISION -->
       <article id="nivel-economico" class="node level" style="left:155px; top:635px;">
         <div class="head">Nivel de decisión</div>
         <div class="body">
           Extensiva
-          <div class="more">
-            Compra importante, alto análisis y comparación racional.
-          </div>
+          <div class="more">Compra importante, alto análisis y comparación racional.</div>
         </div>
       </article>
 
@@ -423,9 +370,7 @@
         <div class="head">Nivel de decisión</div>
         <div class="body">
           Limitada
-          <div class="more">
-            No analiza todo: decide por estímulos y beneficios visibles.
-          </div>
+          <div class="more">No analiza todo: decide por estímulos y beneficios visibles.</div>
         </div>
       </article>
 
@@ -433,9 +378,7 @@
         <div class="head">Nivel de decisión</div>
         <div class="body">
           Extensiva
-          <div class="more">
-            Investiga, compara y reduce incertidumbre antes de comprar.
-          </div>
+          <div class="more">Investiga, compara y reduce incertidumbre antes de comprar.</div>
         </div>
       </article>
 
@@ -443,13 +386,10 @@
         <div class="head">Nivel de decisión</div>
         <div class="body">
           Limitada
-          <div class="more">
-            Compra relevante, pero impulsada por aspiración y significado.
-          </div>
+          <div class="more">Compra relevante, pero impulsada por aspiración y significado.</div>
         </div>
       </article>
 
-      <!-- CAMPANA PARALELA -->
       <article id="campana" class="node campaign" style="left:760px; top:835px;">
         <div class="head">Campaña publicitaria integrada</div>
         <div class="body">
@@ -465,9 +405,7 @@
         <div class="head">Concepto clave</div>
         <div class="body">
           “Más rendimiento, más batería y menor peso por un precio real.”
-          <div class="more">
-            Infografías comparativas: datos visibles y verificables.
-          </div>
+          <div class="more">Infografías comparativas: datos visibles y verificables.</div>
         </div>
       </article>
 
@@ -475,9 +413,7 @@
         <div class="head">Concepto clave</div>
         <div class="body">
           “Mochila + Office gratis por un año.”
-          <div class="more">
-            Beneficio inmediato, simple y fácil de recordar.
-          </div>
+          <div class="more">Beneficio inmediato, simple y fácil de recordar.</div>
         </div>
       </article>
 
@@ -485,9 +421,7 @@
         <div class="head">Concepto clave</div>
         <div class="body">
           “SmartBook X puesto a prueba.”
-          <div class="more">
-            Reviews, redes sociales, blogs, pruebas y comparativas.
-          </div>
+          <div class="more">Reviews, redes sociales, blogs, pruebas y comparativas.</div>
         </div>
       </article>
 
@@ -495,18 +429,14 @@
         <div class="head">Concepto clave</div>
         <div class="body">
           “Tu futuro en tus manos.”
-          <div class="more">
-            Storytelling con estudiantes y jóvenes profesionales logrando metas.
-          </div>
+          <div class="more">Storytelling con estudiantes y jóvenes profesionales logrando metas.</div>
         </div>
       </article>
 
-      <!-- IMÁGENES EDITABLES: cambia src por la ruta de tus imágenes en GitHub -->
       <article id="img-economico" class="node image-card" style="left:80px; top:1035px;">
         <div class="head">Imagen: económico</div>
         <div class="body">
-          <!-- CAMBIA ESTA RUTA: imagen para hombre económico -->
-          <img class="concept-img" src="/mnt/data/da4600fe-f4fb-46af-b547-04779685ea24.png" alt="Imagen hombre económico: comparación de precio y valor" />
+          <img class="concept-img" src="hombre-economico.jpg" alt="Hombre económico" />
           <div class="img-caption">Datos, comparación y precio real.</div>
         </div>
       </article>
@@ -514,8 +444,7 @@
       <article id="img-pasivo" class="node image-card" style="left:420px; top:1035px;">
         <div class="head">Imagen: pasivo</div>
         <div class="body">
-          <!-- CAMBIA ESTA RUTA: imagen para hombre pasivo -->
-          <img class="concept-img" src="/mnt/data/d6035fb6-be51-4bfe-8fc1-185434f94008.png" alt="Imagen hombre pasivo: publicidad, promoción y oferta" />
+          <img class="concept-img" src="hombre-pasivo.jpg" alt="Hombre pasivo" />
           <div class="img-caption">Promoción visible y beneficio inmediato.</div>
         </div>
       </article>
@@ -523,8 +452,7 @@
       <article id="img-cognoscitivo" class="node image-card" style="left:1120px; top:1035px;">
         <div class="head">Imagen: cognoscitivo</div>
         <div class="body">
-          <!-- CAMBIA ESTA RUTA: imagen para hombre cognoscitivo -->
-          <img class="concept-img" src="/mnt/data/52e83d5f-b79c-4ae5-870e-991a7ed0e7c4.png" alt="Imagen hombre cognoscitivo: análisis técnico y validación" />
+          <img class="concept-img" src="hombre-cognoscitivo.jpg" alt="Hombre cognoscitivo" />
           <div class="img-caption">Pruebas, reviews y validación.</div>
         </div>
       </article>
@@ -532,13 +460,11 @@
       <article id="img-emocional" class="node image-card" style="left:1460px; top:1035px;">
         <div class="head">Imagen: emocional</div>
         <div class="body">
-          <!-- CAMBIA ESTA RUTA: imagen para hombre emocional -->
-          <img class="concept-img" src="/mnt/data/6e1ee219-b4a2-479f-86c4-feb8346cdbcb.png" alt="Imagen hombre emocional: aspiración académica y futuro" />
+          <img class="concept-img" src="hombre-emocional.jpg" alt="Hombre emocional" />
           <div class="img-caption">Aspiración, futuro y estatus.</div>
         </div>
       </article>
 
-      <!-- ETICA -->
       <article id="etica" class="node ethics" style="left:760px; top:1195px;">
         <div class="head">Ética del neuromarketing</div>
         <div class="body">
@@ -548,171 +474,156 @@
             <span class="tag">Beneficios verificables</span>
             <span class="tag">Sin falsa urgencia</span>
             <span class="tag">Sin ocultar riesgos</span>
-            <small>Perspectiva real: ayuda a decidir mejor, no fuerza la compra.</small>
+            <small>Ayuda a decidir mejor, no fuerza la compra.</small>
           </div>
         </div>
       </article>
-
     </section>
   </main>
 
   <script>
-    const defaultPositions = {};
-
     const links = [
-      // Jerarquía producto > tipo de consumidor > respuesta > nivel
-      ['producto', 'economico', 'normal'],
-      ['producto', 'pasivo', 'normal'],
-      ['producto', 'cognoscitivo', 'normal'],
-      ['producto', 'emocional', 'normal'],
+      ["producto", "economico", "line"],
+      ["producto", "pasivo", "line"],
+      ["producto", "cognoscitivo", "line"],
+      ["producto", "emocional", "line"],
 
-      ['economico', 'resp-economico', 'normal'],
-      ['pasivo', 'resp-pasivo', 'normal'],
-      ['cognoscitivo', 'resp-cognoscitivo', 'normal'],
-      ['emocional', 'resp-emocional', 'normal'],
+      ["economico", "resp-economico", "line"],
+      ["pasivo", "resp-pasivo", "line"],
+      ["cognoscitivo", "resp-cognoscitivo", "line"],
+      ["emocional", "resp-emocional", "line"],
 
-      ['resp-economico', 'nivel-economico', 'normal'],
-      ['resp-pasivo', 'nivel-pasivo', 'normal'],
-      ['resp-cognoscitivo', 'nivel-cognoscitivo', 'normal'],
-      ['resp-emocional', 'nivel-emocional', 'normal'],
+      ["resp-economico", "nivel-economico", "line"],
+      ["resp-pasivo", "nivel-pasivo", "line"],
+      ["resp-cognoscitivo", "nivel-cognoscitivo", "line"],
+      ["resp-emocional", "nivel-emocional", "line"],
 
-      // Campaña en paralelo conectada a conceptos clave
-      ['campana', 'key-economico', 'campaign-link'],
-      ['campana', 'key-pasivo', 'campaign-link'],
-      ['campana', 'key-cognoscitivo', 'campaign-link'],
-      ['campana', 'key-emocional', 'campaign-link'],
+      ["campana", "key-economico", "line campaign-link"],
+      ["campana", "key-pasivo", "line campaign-link"],
+      ["campana", "key-cognoscitivo", "line campaign-link"],
+      ["campana", "key-emocional", "line campaign-link"],
 
-      // Tipo de hombre conectado a concepto clave del notebook
-      ['economico', 'key-economico', 'campaign-link'],
-      ['pasivo', 'key-pasivo', 'campaign-link'],
-      ['cognoscitivo', 'key-cognoscitivo', 'campaign-link'],
-      ['emocional', 'key-emocional', 'campaign-link'],
+      ["economico", "key-economico", "line campaign-link"],
+      ["pasivo", "key-pasivo", "line campaign-link"],
+      ["cognoscitivo", "key-cognoscitivo", "line campaign-link"],
+      ["emocional", "key-emocional", "line campaign-link"],
 
-      // Conceptos clave conectados a imágenes editables
-      ['key-economico', 'img-economico', 'campaign-link'],
-      ['key-pasivo', 'img-pasivo', 'campaign-link'],
-      ['key-cognoscitivo', 'img-cognoscitivo', 'campaign-link'],
-      ['key-emocional', 'img-emocional', 'campaign-link'],
+      ["key-economico", "img-economico", "line campaign-link"],
+      ["key-pasivo", "img-pasivo", "line campaign-link"],
+      ["key-cognoscitivo", "img-cognoscitivo", "line campaign-link"],
+      ["key-emocional", "img-emocional", "line campaign-link"],
 
-      // Ética aborda la campaña, conceptos e imágenes
-      ['etica', 'campana', 'ethics-link'],
-      ['etica', 'key-economico', 'ethics-link'],
-      ['etica', 'key-pasivo', 'ethics-link'],
-      ['etica', 'key-cognoscitivo', 'ethics-link'],
-      ['etica', 'key-emocional', 'ethics-link'],
-      ['etica', 'img-economico', 'ethics-link'],
-      ['etica', 'img-pasivo', 'ethics-link'],
-      ['etica', 'img-cognoscitivo', 'ethics-link'],
-      ['etica', 'img-emocional', 'ethics-link']
+      ["etica", "campana", "line ethics-link"],
+      ["etica", "key-economico", "line ethics-link"],
+      ["etica", "key-pasivo", "line ethics-link"],
+      ["etica", "key-cognoscitivo", "line ethics-link"],
+      ["etica", "key-emocional", "line ethics-link"]
     ];
 
-    const svg = document.getElementById('connections');
-    const workspace = document.getElementById('workspace');
+    const svg = document.getElementById("connections");
+    const workspace = document.getElementById("workspace");
+    const defaultPositions = {};
 
-    function saveDefaultPositions() {
-      document.querySelectorAll('.node').forEach(node => {
-        defaultPositions[node.id] = {
-          left: node.style.left,
-          top: node.style.top
-        };
-      });
-    }
-
-    function centerOf(el) {
-      return {
-        x: el.offsetLeft + el.offsetWidth / 2,
-        y: el.offsetTop + el.offsetHeight / 2
+    document.querySelectorAll(".node").forEach((node) => {
+      defaultPositions[node.id] = {
+        left: node.style.left,
+        top: node.style.top
       };
-    }
 
-    function drawConnections() {
-      svg.innerHTML = '';
-      links.forEach(([fromId, toId, type]) => {
-        const from = document.getElementById(fromId);
-        const to = document.getElementById(toId);
-        if (!from || !to) return;
-
-        const a = centerOf(from);
-        const b = centerOf(to);
-        const midY = (a.y + b.y) / 2;
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${a.x} ${a.y} C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`);
-        path.setAttribute('class', `line ${type}`);
-        svg.appendChild(path);
-      });
-    }
-
-    function makeDraggable(node) {
       let dragging = false;
+      let moved = false;
       let offsetX = 0;
       let offsetY = 0;
-      let moved = false;
 
-      node.addEventListener('pointerdown', (event) => {
-        if (event.target.closest('button')) return;
+      node.addEventListener("pointerdown", (event) => {
         dragging = true;
         moved = false;
-        const rect = node.getBoundingClientRect();
-        const canvasRect = workspace.getBoundingClientRect();
-        offsetX = event.clientX - rect.left;
-        offsetY = event.clientY - rect.top;
+        offsetX = event.clientX - node.getBoundingClientRect().left;
+        offsetY = event.clientY - node.getBoundingClientRect().top;
         node.setPointerCapture(event.pointerId);
         node.style.zIndex = 20;
       });
 
-      node.addEventListener('pointermove', (event) => {
+      node.addEventListener("pointermove", (event) => {
         if (!dragging) return;
-        moved = true;
-        const canvasRect = workspace.getBoundingClientRect();
-        let x = event.clientX - canvasRect.left - offsetX;
-        let y = event.clientY - canvasRect.top - offsetY;
 
-        x = Math.max(0, Math.min(x, workspace.offsetWidth - node.offsetWidth));
-        y = Math.max(0, Math.min(y, workspace.offsetHeight - node.offsetHeight));
+        moved = true;
+
+        const rect = workspace.getBoundingClientRect();
+        const x = Math.max(0, Math.min(event.clientX - rect.left - offsetX, workspace.offsetWidth - node.offsetWidth));
+        const y = Math.max(0, Math.min(event.clientY - rect.top - offsetY, workspace.offsetHeight - node.offsetHeight));
 
         node.style.left = `${x}px`;
         node.style.top = `${y}px`;
+
         drawConnections();
       });
 
-      node.addEventListener('pointerup', (event) => {
+      node.addEventListener("pointerup", (event) => {
         dragging = false;
         node.releasePointerCapture(event.pointerId);
-        setTimeout(() => { node.style.zIndex = 2; }, 80);
+        setTimeout(() => {
+          node.style.zIndex = 2;
+        }, 80);
       });
 
-      node.addEventListener('click', () => {
+      node.addEventListener("click", () => {
         if (moved) return;
-        node.classList.toggle('expanded');
+        node.classList.toggle("expanded");
         setTimeout(drawConnections, 20);
+      });
+    });
+
+    function center(element) {
+      return {
+        x: element.offsetLeft + element.offsetWidth / 2,
+        y: element.offsetTop + element.offsetHeight / 2
+      };
+    }
+
+    function drawConnections() {
+      svg.innerHTML = "";
+
+      links.forEach(([fromId, toId, className]) => {
+        const from = document.getElementById(fromId);
+        const to = document.getElementById(toId);
+
+        if (!from || !to) return;
+
+        const start = center(from);
+        const end = center(to);
+        const middleY = (start.y + end.y) / 2;
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M ${start.x} ${start.y} C ${start.x} ${middleY}, ${end.x} ${middleY}, ${end.x} ${end.y}`);
+        path.setAttribute("class", className);
+
+        svg.appendChild(path);
       });
     }
 
     function expandAll() {
-      document.querySelectorAll('.node').forEach(node => node.classList.add('expanded'));
+      document.querySelectorAll(".node").forEach((node) => node.classList.add("expanded"));
       setTimeout(drawConnections, 20);
     }
 
     function collapseAll() {
-      document.querySelectorAll('.node').forEach(node => node.classList.remove('expanded'));
+      document.querySelectorAll(".node").forEach((node) => node.classList.remove("expanded"));
       setTimeout(drawConnections, 20);
     }
 
     function resetPositions() {
-      document.querySelectorAll('.node').forEach(node => {
-        if (!defaultPositions[node.id]) return;
+      document.querySelectorAll(".node").forEach((node) => {
         node.style.left = defaultPositions[node.id].left;
         node.style.top = defaultPositions[node.id].top;
-        node.classList.remove('expanded');
+        node.classList.remove("expanded");
       });
+
       drawConnections();
     }
 
-    document.querySelectorAll('.node').forEach(makeDraggable);
-    saveDefaultPositions();
     drawConnections();
-    window.addEventListener('resize', drawConnections);
+    window.addEventListener("resize", drawConnections);
   </script>
 </body>
 </html>
