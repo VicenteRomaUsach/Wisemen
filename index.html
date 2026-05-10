@@ -1,1013 +1,718 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HelpU - Plataforma de Aprendizaje</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Fuente -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Modal Overlay */
-        .modal-overlay { background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Conceptual SmartBook X</title>
+  <style>
+    :root {
+      --bg: #fffdf2;
+      --ink: #111827;
+      --line: #1f2937;
+      --product: #0f766e;
+      --economic: #1d4ed8;
+      --passive: #b45309;
+      --cognitive: #6d28d9;
+      --emotional: #be123c;
+      --campaign: #047857;
+      --ethics: #334155;
+      --soft: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.25);
+    }
 
-        /* Shorts Container Scroll */
-        .shorts-container {
-            height: calc(100vh - 250px);
-            scroll-snap-type: y mandatory;
-            overflow-y: scroll;
-        }
-        .short-item {
-            scroll-snap-align: start;
-            height: 100%;
-        }
-    </style>
+    /*
+      CAMBIO DE IMÁGENES:
+      Reemplaza el atributo src="..." de cada imagen en el HTML.
+      Ejemplos para tu proyecto de GitHub:
+      src="./assets/hombre-economico.png"
+      src="./img/hombre-pasivo.jpg"
+      src="https://usuario.github.io/repositorio/assets/hombre-emocional.png"
+    */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    header {
+      height: 74px;
+      padding: 10px 24px;
+      background: #111827;
+      color: white;
+      border-bottom: 6px solid #facc15;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: 0.4px;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: #fef3c7;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 3px solid #facc15;
+      background: #fff;
+      color: #111827;
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #92400e;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #92400e;
+    }
+
+    #canvas {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 74px);
+      overflow: auto;
+      background:
+        linear-gradient(rgba(17, 24, 39, 0.07) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(17, 24, 39, 0.07) 2px, transparent 2px),
+        var(--bg);
+      background-size: 44px 44px;
+    }
+
+    #workspace {
+      position: relative;
+      width: 1900px;
+      height: 1480px;
+      margin: 0;
+    }
+
+    svg#connections {
+      position: absolute;
+      inset: 0;
+      width: 1900px;
+      height: 1480px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .line {
+      stroke: var(--line);
+      stroke-width: 4;
+      fill: none;
+      opacity: 0.82;
+    }
+
+    .line.campaign-link {
+      stroke: #047857;
+      stroke-width: 5;
+      stroke-dasharray: 9 8;
+    }
+
+    .line.ethics-link {
+      stroke: #334155;
+      stroke-width: 5;
+      stroke-dasharray: 3 8;
+    }
+
+    .node {
+      position: absolute;
+      z-index: 2;
+      width: 260px;
+      min-height: 84px;
+      border: 5px solid #111827;
+      border-radius: 20px;
+      background: var(--soft);
+      box-shadow: 8px 8px 0 var(--shadow);
+      cursor: grab;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .node:active {
+      cursor: grabbing;
+    }
+
+    .node .head {
+      padding: 12px 14px;
+      color: white;
+      font-weight: 900;
+      font-size: 18px;
+      line-height: 1.15;
+      border-bottom: 4px solid #111827;
+    }
+
+    .node .body {
+      padding: 11px 14px 14px;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .node .more {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 3px dashed #334155;
+      font-weight: 700;
+    }
+
+    .node.expanded .more {
+      display: block;
+    }
+
+    .node small {
+      display: block;
+      margin-top: 8px;
+      color: #374151;
+      font-weight: 900;
+    }
+
+    .tag {
+      display: inline-block;
+      margin: 4px 4px 0 0;
+      padding: 4px 8px;
+      border: 2px solid #111827;
+      border-radius: 999px;
+      background: #fef9c3;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .product .head { background: var(--product); }
+    .economic .head { background: var(--economic); }
+    .passive .head { background: var(--passive); }
+    .cognitive .head { background: var(--cognitive); }
+    .emotional .head { background: var(--emotional); }
+    .campaign .head { background: var(--campaign); }
+    .ethics .head { background: var(--ethics); }
+    .level .head { background: #7c2d12; }
+    .response .head { background: #374151; }
+    .key .head { background: #111827; }
+    .image-card .head { background: #111827; }
+
+    .product {
+      width: 330px;
+      min-height: 115px;
+    }
+
+    .campaign {
+      width: 360px;
+    }
+
+    .ethics {
+      width: 360px;
+      border-color: #0f172a;
+      outline: 8px solid rgba(51, 65, 85, 0.22);
+    }
+
+    .key {
+      width: 300px;
+    }
+
+    .level {
+      width: 230px;
+    }
+
+    .response {
+      width: 280px;
+    }
+
+    .image-card {
+      width: 250px;
+      min-height: 220px;
+    }
+
+    .image-card .body {
+      padding: 10px;
+    }
+
+    .concept-img {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      border: 4px solid #111827;
+      border-radius: 14px;
+      background: #e5e7eb;
+      display: block;
+    }
+
+    .img-caption {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #111827;
+    }
+
+    .note {
+      position: absolute;
+      z-index: 3;
+      left: 24px;
+      top: 1360px;
+      width: 960px;
+      background: #fef3c7;
+      border: 4px solid #92400e;
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.18);
+    }
+
+    @media print {
+      body { overflow: visible; }
+      header { display: none; }
+      #canvas { overflow: visible; height: 1480px; }
+      .node { box-shadow: none; }
+      .note { box-shadow: none; }
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col relative">
-
-    <!-- Navbar -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <!-- Logo & Desktop Nav -->
-                <div class="flex items-center gap-8">
-                    <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="switchTab('marketplace')">
-                        <i data-lucide="graduation-cap" class="w-10 h-10 text-blue-600"></i>
-                        <span class="text-2xl font-bold text-slate-800 tracking-tight">HelpU</span>
-                    </div>
-                    <div class="hidden md:flex space-x-1">
-                        <button onclick="switchTab('marketplace')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors bg-blue-50 text-blue-600" data-target="marketplace">
-                            <i data-lucide="book-open" class="w-4 h-4"></i> Marketplace
-                        </button>
-                        <button onclick="switchTab('comunidad')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50" data-target="comunidad">
-                            <i data-lucide="users" class="w-4 h-4"></i> Comunidad
-                        </button>
-                        <button onclick="switchTab('ia')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50" data-target="ia">
-                            <i data-lucide="zap" class="w-4 h-4"></i> HelpU IA
-                        </button>
-                        <button onclick="switchTab('shorts')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50" data-target="shorts">
-                            <i data-lucide="play-square" class="w-4 h-4"></i> Shorts
-                        </button>
-                        <button onclick="switchTab('planes')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors text-slate-600 hover:bg-slate-50" data-target="planes">
-                            <i data-lucide="star" class="w-4 h-4"></i> Planes
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Right Actions -->
-                <div class="flex items-center gap-4">
-                    <button onclick="switchTab('creator')" class="hidden md:flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-900 transition shadow-sm nav-btn" data-target="creator">
-                        <i data-lucide="pencil" class="w-4 h-4"></i> Ser Creador
-                    </button>
-                    <div class="h-6 w-px bg-slate-200 hidden md:block"></div>
-                    <button class="relative p-2 text-slate-600 hover:text-blue-600 transition" onclick="toggleCart()">
-                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-                        <span id="cart-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full hidden">0</span>
-                    </button>
-                    <!-- Mobile Menu Button -->
-                    <div class="flex items-center md:hidden">
-                        <button onclick="toggleMobileMenu()" class="text-slate-600 hover:text-slate-900">
-                            <i data-lucide="menu" class="w-6 h-6"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <button onclick="switchTab('marketplace')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Marketplace</button>
-                <button onclick="switchTab('comunidad')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Comunidad</button>
-                <button onclick="switchTab('shorts')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Shorts</button>
-                <button onclick="switchTab('planes')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Planes</button>
-                <button onclick="switchTab('creator')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50 font-bold">Ser Creador</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-        
-        <!-- TAB: MARKETPLACE -->
-        <div id="tab-marketplace" class="tab-content fade-in">
-            <!-- Hero -->
-            <div class="bg-blue-50 rounded-xl p-8 mb-8 flex flex-col md:flex-row items-center justify-between border border-blue-100">
-                <div class="md:w-2/3 mb-6 md:mb-0">
-                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Marketplace de Apuntes</h2>
-                    <p class="text-slate-600 mb-4">Material académico verificado por carrera y universidad.</p>
-                    <div class="flex gap-2">
-                        <div class="relative flex-grow max-w-md">
-                            <div class="absolute left-3 top-3 text-slate-400">
-                                <i data-lucide="search" class="w-5 h-5"></i>
-                            </div>
-                            <input type="text" id="course-search" placeholder="Buscar por ramo o profesor..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="filterCourses()">
-                        </div>
-                    </div>
-                </div>
-                <div class="md:w-1/3 flex justify-center">
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
-                        <p class="font-bold text-2xl text-blue-600">+5.000</p>
-                        <p class="text-sm text-slate-500">Estudiantes activos</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col md:flex-row gap-6">
-                <!-- Sidebar Filters -->
-                <div class="w-full md:w-1/4">
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 sticky top-24">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="filter" class="w-5 h-5 text-slate-600"></i>
-                                <h3 class="font-semibold text-slate-700">Filtros</h3>
-                            </div>
-                            <button onclick="resetFilters()" class="text-xs text-blue-600 hover:underline">Limpiar</button>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <h4 class="text-sm font-medium text-slate-600 mb-2">Universidad</h4>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="PUC" class="uni-filter rounded text-blue-600"> PUC</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="U. de Chile" class="uni-filter rounded text-blue-600"> U. de Chile</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="USACH" class="uni-filter rounded text-blue-600"> USACH</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="UDP" class="uni-filter rounded text-blue-600"> UDP</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="INACAP" class="uni-filter rounded text-blue-600"> INACAP</label>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <h4 class="text-sm font-medium text-slate-600 mb-2">Dificultad</h4>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="Difícil" class="diff-filter rounded text-blue-600"> Difícil</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="Media" class="diff-filter rounded text-blue-600"> Media</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="Normal" class="diff-filter rounded text-blue-600"> Normal</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="checkbox" checked onchange="filterCourses()" value="Baja" class="diff-filter rounded text-blue-600"> Baja</label>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                           <h4 class="text-sm font-medium text-slate-600 mb-2">Ordenar por Precio</h4>
-                           <select id="sort-price" onchange="filterCourses()" class="w-full text-sm border border-slate-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                               <option value="default">Relevancia</option>
-                               <option value="asc">Menor a Mayor</option>
-                               <option value="desc">Mayor a Menor</option>
-                           </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Course Grid Container (Filled via JS) -->
-                <div class="w-full md:w-3/4">
-                    <div id="course-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Courses will be injected here -->
-                    </div>
-                    <div id="no-results" class="hidden py-12 text-center text-slate-500">
-                        No se encontraron cursos con estos filtros.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: COMUNIDAD -->
-        <div id="tab-comunidad" class="tab-content hidden fade-in">
-            <div class="flex flex-col md:flex-row gap-6">
-                <!-- Community Sidebar -->
-                <div class="w-full md:w-1/4">
-                     <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 sticky top-24">
-                        <button class="w-full bg-blue-600 text-white font-medium py-2 rounded-lg mb-4 hover:bg-blue-700 transition">
-                            <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i> Nueva Pregunta
-                        </button>
-                        <h3 class="font-semibold text-slate-700 mb-3">Temas Populares</h3>
-                        <ul class="space-y-2 text-sm text-slate-600">
-                            <li class="hover:text-blue-600 cursor-pointer flex justify-between">#Innovación <span class="bg-slate-100 px-2 rounded-full text-xs">12</span></li>
-                            <li class="hover:text-blue-600 cursor-pointer flex justify-between">#Finanzas <span class="bg-slate-100 px-2 rounded-full text-xs">8</span></li>
-                            <li class="hover:text-blue-600 cursor-pointer flex justify-between">#PEP1 <span class="bg-slate-100 px-2 rounded-full text-xs">5</span></li>
-                            <li class="hover:text-blue-600 cursor-pointer flex justify-between">#Tesis <span class="bg-slate-100 px-2 rounded-full text-xs">3</span></li>
-                        </ul>
-                     </div>
-                </div>
-
-                <!-- Community Feed -->
-                <div class="w-full md:w-3/4">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-                       <h2 class="text-2xl font-bold text-slate-800 mb-2">Foro de Ayuda</h2>
-                       <p class="text-slate-600">Resuelve tus dudas académicas con ayuda de tus compañeros.</p>
-                       <div class="mt-4 flex gap-2">
-                           <input type="text" placeholder="Buscar en el foro..." class="flex-grow border border-slate-300 rounded-lg px-4 py-2 text-sm">
-                           <button class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-200">Buscar</button>
-                       </div>
-                    </div>
-       
-                    <div id="community-feed" class="space-y-4">
-                       <!-- Posts Injected via JS -->
-                    </div>
-                 </div>
-            </div>
-        </div>
-
-        <!-- TAB: SHORTS (MICROLEARNING) -->
-        <div id="tab-shorts" class="tab-content hidden fade-in max-w-md mx-auto">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-4">
-                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="play-square" class="text-red-500"></i> Micro-Learning HelpU
-                </h2>
-                <p class="text-xs text-slate-500">Conceptos clave en menos de 60 segundos.</p>
-            </div>
-
-            <div class="shorts-container bg-black rounded-3xl relative">
-                <!-- Fake Short 1 -->
-                <div class="short-item relative overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-80" alt="Video 1">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    
-                    <!-- Side Actions -->
-                    <div class="absolute right-4 bottom-24 flex flex-col gap-6 text-white text-center">
-                        <div class="flex flex-col items-center">
-                            <button class="bg-white/10 p-3 rounded-full hover:bg-white/20"><i data-lucide="heart"></i></button>
-                            <span class="text-xs font-bold mt-1">1.2k</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <button class="bg-white/10 p-3 rounded-full hover:bg-white/20"><i data-lucide="message-circle"></i></button>
-                            <span class="text-xs font-bold mt-1">45</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <button class="bg-white/10 p-3 rounded-full hover:bg-white/20"><i data-lucide="share-2"></i></button>
-                            <span class="text-xs font-bold mt-1">Share</span>
-                        </div>
-                    </div>
-
-                    <!-- Bottom Content -->
-                    <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold border border-white">C</div>
-                            <span class="font-bold text-sm">Cristian Ramírez • INACAP</span>
-                        </div>
-                        <h3 class="font-bold text-lg leading-tight mb-2">Cómo hacer un Elevator Pitch perfecto 🚀</h3>
-                        <p class="text-sm text-slate-300">#TallerInnovacion #Pitch #Startups</p>
-                    </div>
-
-                    <!-- Play Overlay -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-                        <i data-lucide="play" class="w-16 h-16 text-white fill-current"></i>
-                    </div>
-                </div>
-
-                <!-- Fake Short 2 -->
-                <div class="short-item relative overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-80" alt="Video 2">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    
-                    <div class="absolute right-4 bottom-24 flex flex-col gap-6 text-white text-center">
-                        <div class="flex flex-col items-center">
-                            <button class="bg-white/10 p-3 rounded-full hover:bg-white/20 text-red-500"><i data-lucide="heart" class="fill-current"></i></button>
-                            <span class="text-xs font-bold mt-1">3.4k</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <button class="bg-white/10 p-3 rounded-full hover:bg-white/20"><i data-lucide="message-circle"></i></button>
-                            <span class="text-xs font-bold mt-1">120</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <button class="bg-white/10 p-3 rounded-full hover:bg-white/20"><i data-lucide="bookmark"></i></button>
-                            <span class="text-xs font-bold mt-1">Save</span>
-                        </div>
-                    </div>
-
-                    <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold border border-white">E</div>
-                            <span class="font-bold text-sm">Prof. Eduardo Muñoz • USACH</span>
-                        </div>
-                        <h3 class="font-bold text-lg leading-tight mb-2">VAN vs TIR: Diferencias clave en 60s 📊</h3>
-                        <p class="text-sm text-slate-300">#Finanzas #EvaluacionProyectos #USACH</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: PLANES -->
-        <div id="tab-planes" class="tab-content hidden fade-in">
-            <div class="max-w-5xl mx-auto py-8">
-                <h2 class="text-3xl font-bold text-center text-slate-800 mb-4">Elige tu plan de estudio</h2>
-                <p class="text-center text-slate-600 mb-12 max-w-2xl mx-auto">Suscripciones diseñadas para acompañarte todo el semestre.</p>
-                
-                <div class="grid md:grid-cols-3 gap-8">
-                  <!-- Plan Gratis -->
-                  <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col hover:border-blue-300 transition">
-                    <div class="mb-4">
-                      <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Básico</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-800 mb-2">Gratis</h3>
-                    <p class="text-slate-500 text-sm mb-6">Para buscar material puntualmente.</p>
-                    <div class="text-4xl font-bold text-slate-800 mb-8">$0<span class="text-base font-normal text-slate-500">/mes</span></div>
-                    
-                    <ul class="space-y-4 mb-8 flex-grow">
-                      <li class="flex items-center gap-3 text-sm text-slate-600"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Acceso al Marketplace</li>
-                      <li class="flex items-center gap-3 text-sm text-slate-600"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Compra unitaria de cursos</li>
-                      <li class="flex items-center gap-3 text-sm text-slate-400 line-through"><i data-lucide="x" class="w-4 h-4"></i> Sin anuncios</li>
-                    </ul>
-                    <button class="w-full py-3 rounded-xl border border-slate-300 text-slate-600 font-semibold hover:bg-slate-50 transition">Plan Actual</button>
-                  </div>
-    
-                  <!-- Plan Sin Anuncios -->
-                  <div class="bg-white rounded-2xl p-8 border-2 border-blue-600 shadow-lg relative flex flex-col transform md:-translate-y-4">
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold tracking-wider shadow-sm">RECOMENDADO</div>
-                    <div class="mb-4 mt-2">
-                      <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Estudiante</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-800 mb-2">Sin Anuncios</h3>
-                    <p class="text-slate-500 text-sm mb-6">Estudia sin distracciones.</p>
-                    <div class="text-4xl font-bold text-slate-800 mb-8">$2.990<span class="text-base font-normal text-slate-500">/mes</span></div>
-                    
-                    <ul class="space-y-4 mb-8 flex-grow">
-                      <li class="flex items-center gap-3 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Todo lo del plan Gratis</li>
-                      <li class="flex items-center gap-3 text-sm text-slate-700 font-bold bg-blue-50 p-1 rounded"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Navegación SIN ANUNCIOS</li>
-                      <li class="flex items-center gap-3 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Soporte standard</li>
-                    </ul>
-                    <button class="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md">Suscribirse</button>
-                  </div>
-    
-                  <!-- Plan Premium -->
-                  <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col hover:border-purple-300 transition">
-                    <div class="mb-4">
-                      <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Pro</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-800 mb-2">Premium</h3>
-                    <p class="text-slate-500 text-sm mb-6">Herramientas avanzadas de IA.</p>
-                    <div class="text-4xl font-bold text-slate-800 mb-8">$9.990<span class="text-base font-normal text-slate-500">/mes</span></div>
-                    
-                    <ul class="space-y-4 mb-8 flex-grow">
-                      <li class="flex items-center gap-3 text-sm text-slate-600"><i data-lucide="check" class="w-4 h-4 text-purple-500"></i> Todo lo del plan Sin Anuncios</li>
-                      <li class="flex items-center gap-3 text-sm text-slate-600 font-medium"><i data-lucide="check" class="w-4 h-4 text-purple-500"></i> 10% Dscto. en Marketplace</li>
-                      <li class="flex items-center gap-3 text-sm text-slate-600"><i data-lucide="check" class="w-4 h-4 text-purple-500"></i> Acceso total HelpU IA</li>
-                    </ul>
-                    <button class="w-full py-3 rounded-xl border border-purple-600 text-purple-600 font-semibold hover:bg-purple-50 transition">Seleccionar</button>
-                  </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: CREATOR -->
-        <div id="tab-creator" class="tab-content hidden fade-in">
-            <div class="max-w-2xl mx-auto py-8">
-                <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-800 p-6 text-white text-center">
-                        <i data-lucide="pencil" class="w-12 h-12 mx-auto mb-3 text-blue-400"></i>
-                        <h2 class="text-2xl font-bold">Conviértete en Creador HelpU</h2>
-                        <p class="text-slate-300 mt-2">Monetiza tus apuntes y ayuda a la comunidad.</p>
-                    </div>
-                    <div class="p-8">
-                        <form onsubmit="event.preventDefault(); alert('¡Solicitud enviada! Te contactaremos pronto.'); switchTab('marketplace');">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Nombre</label>
-                                    <input type="text" required class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Apellido</label>
-                                    <input type="text" required class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                </div>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Correo Electrónico Institucional</label>
-                                <input type="email" required placeholder="nombre@universidad.cl" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Institución Educativa</label>
-                                <select class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                    <option>Pontificia Universidad Católica</option>
-                                    <option>Universidad de Chile</option>
-                                    <option>USACH</option>
-                                    <option>UDP</option>
-                                    <option>INACAP</option>
-                                    <option>Otra</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-8">
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Descripción del Material / Tags</label>
-                                <textarea rows="4" placeholder="Ej: Resúmenes de Ingeniería Comercial, #Economía, #Finanzas..." class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-                                <p class="text-xs text-slate-500 mt-2">Cuéntanos qué tipo de material planeas subir.</p>
-                            </div>
-
-                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-sm">
-                                Enviar Solicitud
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-ia" class="tab-content hidden fade-in">
-             <div class="flex flex-col items-center justify-center h-64 text-slate-400">
-                <div class="bg-slate-100 p-4 rounded-full mb-4"><i data-lucide="zap" class="w-8 h-8"></i></div>
-                <p class="text-lg font-medium">HelpU IA: Generador de Resúmenes</p>
-                <p class="text-sm">Próximamente disponible</p>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- SHOPPING CART MODAL (Right Sidebar) -->
-    <div id="cart-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 modal-overlay" onclick="toggleCart()"></div>
-        <div class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out translate-x-0">
-            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="shopping-cart" class="w-5 h-5 text-blue-600"></i> Tu Carrito
-                </h2>
-                <button onclick="toggleCart()" class="text-slate-400 hover:text-slate-700 p-1">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            <div id="cart-items" class="flex-grow p-6 overflow-y-auto space-y-4">
-                <div class="text-center text-slate-400 py-10">Tu carrito está vacío</div>
-            </div>
-            <div class="p-6 border-t border-slate-200 bg-slate-50">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-slate-600 font-medium">Total:</span>
-                    <span id="cart-total" class="text-2xl font-bold text-slate-900">$0</span>
-                </div>
-                <button class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg hover:bg-slate-800 transition flex items-center justify-center gap-2">
-                    <i data-lucide="credit-card" class="w-5 h-5"></i> Pagar con Webpay
-                </button>
-            </div>
-        </div>
+<body>
+  <header>
+    <div>
+      <h1>Mapa conceptual: SmartBook X</h1>
+      <p>Producto → Tipo de consumidor → Respuesta → Nivel de decisión | Campaña + Ética</p>
     </div>
-
-    <!-- COURSE DETAIL MODAL -->
-    <div id="course-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 modal-overlay" onclick="closeCourseModal()"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
-            <div class="relative h-48 sm:h-64 flex-shrink-0">
-                <img id="course-modal-img" src="" class="w-full h-full object-cover">
-                <button onclick="closeCourseModal()" class="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
-                    <span id="course-modal-uni-badge" class="text-xs font-bold uppercase tracking-widest bg-blue-600 px-2 py-1 rounded mb-2 inline-block">UNIVERSIDAD</span>
-                    <h3 id="course-modal-title" class="text-2xl font-bold leading-tight">Nombre del Curso</h3>
-                </div>
-            </div>
-
-            <div class="p-6 overflow-y-auto flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                        <i data-lucide="user" class="w-5 h-5 text-blue-500"></i>
-                        <div>
-                            <p class="text-[10px] uppercase text-slate-400 font-bold">Profesor</p>
-                            <p id="course-modal-prof" class="text-sm font-semibold text-slate-700">Nombre Profesor</p>
-                        </div>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                        <i data-lucide="briefcase" class="w-5 h-5 text-blue-500"></i>
-                        <div>
-                            <p class="text-[10px] uppercase text-slate-400 font-bold">Carrera</p>
-                            <p id="course-modal-career" class="text-sm font-semibold text-slate-700">Nombre Carrera</p>
-                        </div>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                        <i data-lucide="bar-chart" class="w-5 h-5 text-blue-500"></i>
-                        <div>
-                            <p class="text-[10px] uppercase text-slate-400 font-bold">Dificultad</p>
-                            <p id="course-modal-diff" class="text-sm font-semibold text-slate-700">Nivel</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-8">
-                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="play-circle" class="w-5 h-5 text-blue-600"></i> Videos del Curso (2)
-                    </h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="group relative rounded-lg overflow-hidden border border-slate-200 bg-slate-100 aspect-video flex items-center justify-center cursor-not-allowed">
-                            <i data-lucide="play" class="w-8 h-8 text-slate-300"></i>
-                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100">
-                                <i data-lucide="lock" class="w-6 h-6 text-white"></i>
-                            </div>
-                        </div>
-                        <div class="group relative rounded-lg overflow-hidden border border-slate-200 bg-slate-100 aspect-video flex items-center justify-center cursor-not-allowed">
-                            <i data-lucide="play" class="w-8 h-8 text-slate-300"></i>
-                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100">
-                                <i data-lucide="lock" class="w-6 h-6 text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2 text-center italic">Desbloquea los videos comprando el pack completo.</p>
-                </div>
-
-                <div>
-                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i> Apuntes y Guías (3)
-                    </h4>
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="file-text" class="w-5 h-5 text-slate-400"></i>
-                                <span class="text-sm text-slate-600">Resumen PEP 1 - Conceptos clave.pdf</span>
-                            </div>
-                            <a href="#" class="text-sm font-bold text-blue-600 hover:underline">Descargar</a>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="file-text" class="w-5 h-5 text-slate-400"></i>
-                                <span class="text-sm text-slate-600">Guía de Ejercicios VAN/TIR resueltos.pdf</span>
-                            </div>
-                            <a href="#" class="text-sm font-bold text-blue-600 hover:underline">Descargar</a>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="file-text" class="w-5 h-5 text-slate-400"></i>
-                                <span class="text-sm text-slate-600">Pauta Examen Semestre anterior.pdf</span>
-                            </div>
-                            <a href="#" class="text-sm font-bold text-blue-600 hover:underline">Descargar</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-400 uppercase font-bold">Precio del Material</p>
-                    <p id="course-modal-price" class="text-2xl font-bold text-slate-900">$0</p>
-                </div>
-                <button id="modal-buy-btn" onclick="" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 flex items-center gap-2">
-                    <i data-lucide="shopping-cart" class="w-5 h-5"></i> Comprar Material
-                </button>
-            </div>
-        </div>
+    <div class="toolbar">
+      <button onclick="expandAll()">Expandir todo</button>
+      <button onclick="collapseAll()">Contraer todo</button>
+      <button onclick="resetPositions()">Restablecer</button>
     </div>
+  </header>
 
-    <!-- COMMUNITY MODAL POPUP -->
-    <div id="community-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 modal-overlay" onclick="closeModal()"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white w-full max-w-2xl rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-start">
-                <div>
-                    <span id="modal-tag" class="text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-700 mb-2 inline-block">TAG</span>
-                    <h3 id="modal-title" class="text-xl font-bold text-slate-800">Title</h3>
-                    <div class="flex items-center gap-2 mt-2 text-sm text-slate-500">
-                        <span id="modal-author" class="font-medium text-slate-700">Author</span>
-                        <span>•</span>
-                        <span>Hace 2 horas</span>
-                    </div>
-                </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 p-1">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-grow">
-                <p id="modal-content" class="text-slate-700 leading-relaxed mb-8">Content...</p>
-                <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i data-lucide="message-square" class="w-4 h-4"></i> Respuestas
-                </h4>
-                <div class="space-y-4" id="modal-comments"></div>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 rounded-b-xl">
-                <div class="flex gap-2">
-                    <input type="text" placeholder="Escribe una respuesta..." class="flex-grow border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Enviar</button>
-                </div>
-            </div>
+  <main id="canvas">
+    <section id="workspace">
+      <svg id="connections"></svg>
+
+      <!-- PRODUCTO CENTRAL -->
+      <article id="producto" class="node product" style="left:760px; top:80px;">
+        <div class="head">Producto: Notebook SmartBook X</div>
+        <div class="body">
+          Herramienta para avanzar académica y profesionalmente.
+          <div class="more">
+            <span class="tag">Rendimiento</span>
+            <span class="tag">Movilidad</span>
+            <span class="tag">Precio</span>
+            <span class="tag">Valor aspiracional</span>
+            <small>Idea eje: estudiar, trabajar y proyectar futuro.</small>
+          </div>
         </div>
-    </div>
+      </article>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center gap-2 mb-4">
-                        <i data-lucide="graduation-cap" class="w-8 h-8 text-blue-600"></i>
-                        <span class="text-xl font-bold text-slate-800">HelpU</span>
-                    </div>
-                    <p class="text-slate-500 text-sm">Democratizando el acceso al conocimiento universitario en Chile.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-800 mb-4">Plataforma</h4>
-                    <ul class="space-y-2 text-sm text-slate-600">
-                        <li><a href="#" class="hover:text-blue-600">Marketplace</a></li>
-                        <li><a href="#" class="hover:text-blue-600" onclick="switchTab('creator')">Ser Creador</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-800 mb-4">Soporte</h4>
-                    <ul class="space-y-2 text-sm text-slate-600">
-                        <li><a href="#" class="hover:text-blue-600">Centro de Ayuda</a></li>
-                        <li><a href="#" class="hover:text-blue-600">Contacto</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-800 mb-4">Legal</h4>
-                    <ul class="space-y-2 text-sm text-slate-600">
-                        <li><a href="#" class="hover:text-blue-600">Términos y Condiciones</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="mt-8 pt-8 border-t border-slate-100 text-center text-sm text-slate-400">
-                &copy; 2026 HelpU SpA. Hecho en Chile.
-            </div>
+      <!-- TIPOS DE HOMBRE -->
+      <article id="economico" class="node economic" style="left:150px; top:260px;">
+        <div class="head">Hombre económico</div>
+        <div class="body">
+          Decide por comparación racional.
+          <div class="more">
+            Evalúa precio, procesador, batería, peso y costo-beneficio.
+            <small>Busca reducir riesgo con datos objetivos.</small>
+          </div>
         </div>
-    </footer>
+      </article>
 
-    <!-- Logic Script -->
-    <script>
-        // --- DATA ---
-        const allCourses = [
-            {
-                id: 1,
-                university: "PUC",
-                courseName: "Fundamentos del Emprendimiento y la Innovación",
-                creator: "Sofía Vergara",
-                professor: "Sergio Vergara",
-                career: "Ingeniería Comercial",
-                difficulty: "Difícil",
-                difficultyColor: "bg-red-100 text-red-800",
-                price: 12000,
-                rating: 4.9,
-                reviews: 120,
-                image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Material completo del curso EAA209D. Incluye resúmenes de lectura y casos de estudio."
-            },
-            {
-                id: 2,
-                university: "U. de Chile",
-                courseName: "De la Innovación al Emprendimiento Sostenible",
-                creator: "Javier M.",
-                professor: "Francisco Soto",
-                career: "Ingeniería Comercial",
-                difficulty: "Difícil",
-                difficultyColor: "bg-red-100 text-red-800",
-                price: 10500,
-                rating: 4.8,
-                reviews: 95,
-                image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Apuntes del curso FEN. Enfoque en modelos sostenibles y evaluación de impacto."
-            },
-            {
-                id: 3,
-                university: "USACH",
-                courseName: "Capacidad Emprendedora e Innovación Tecnológica",
-                creator: "Ing. Civil Industrial USACH",
-                professor: "Eduardo Muñoz Estrada",
-                career: "Ingeniería Civil Industrial",
-                difficulty: "Media",
-                difficultyColor: "bg-yellow-100 text-yellow-800",
-                price: 8500,
-                rating: 4.7,
-                reviews: 80,
-                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Pack de certámenes pasados y guías de transferencia tecnológica basada en el documento USACH."
-            },
-            {
-                id: 4,
-                university: "UDP",
-                courseName: "Taller de Innovación y Emprendimiento",
-                creator: "Camila Estudiante",
-                professor: "Daniela Rivas",
-                career: "Diseño Industrial",
-                difficulty: "Normal",
-                difficultyColor: "bg-blue-100 text-blue-800",
-                price: 6000,
-                rating: 4.6,
-                reviews: 65,
-                image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Metodologías ágiles y Design Thinking. Pautas de evaluación 2024."
-            },
-            {
-                id: 5,
-                university: "INACAP",
-                courseName: "Taller de Innovación III / Creación de Empresas",
-                creator: "Cristian Ramírez",
-                professor: "Cristian Ramírez",
-                career: "Adm. de Empresas",
-                difficulty: "Baja",
-                difficultyColor: "bg-green-100 text-green-800",
-                price: 3000,
-                rating: 4.5,
-                reviews: 150,
-                image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Material para Taller de Innovación III. Plantillas Canvas y ejemplos de Pitch."
-            }
-        ];
+      <article id="pasivo" class="node passive" style="left:560px; top:260px;">
+        <div class="head">Hombre pasivo</div>
+        <div class="body">
+          Responde a publicidad y promociones.
+          <div class="more">
+            Se activa por mochila, Office gratis, afiches y anuncios visibles.
+            <small>Decide por estímulos externos simples.</small>
+          </div>
+        </div>
+      </article>
 
-        const communityPosts = [
-            {
-                id: 101,
-                title: "Tengo este ejercicio de ayuda y no lo puedo resolver",
-                author: "EstudianteDesesperado",
-                university: "USACH",
-                content: "Hola a todos, tengo un problema con un ejercicio de cálculo de VAN y TIR para el ramo de Gestión. Me da un valor negativo siempre. ¿Alguien tiene la pauta del ejercicio 4 de la guía?",
-                tagColor: "bg-yellow-100 text-yellow-800",
-                comments: [
-                    { user: "AyudantePro", text: "Sube una foto del ejercicio. Ojo que la tasa de descuento cambió este semestre." },
-                    { user: "User123", text: "A mi me dio 15.400. Revisa los flujos del año 3." }
-                ]
-            },
-            {
-                id: 102,
-                title: "¿Alguien sabe cuales son los tipos de financiamiento?",
-                author: "MebolyV",
-                university: "PUC",
-                content: "Estoy estudiando para el examen de mañana y me confundo entre Capital Semilla y los créditos CORFO. ¿Alguien tiene un resumen simple de esto?",
-                tagColor: "bg-blue-100 text-blue-800",
-                comments: [
-                    { user: "Startupero", text: "Capital Semilla es subsidio (no se devuelve), crédito CORFO es deuda con garantía estatal. Te mando un pdf." }
-                ]
-            },
-            {
-                id: 103,
-                title: "¿Alguien tiene una PEP pasada de administracion?",
-                author: "NicoRojas",
-                university: "UDP",
-                content: "Busco PEP 1 o PEP 2 de Administración General de años anteriores para practicar. ¡Intercambio por resúmenes de economía!",
-                tagColor: "bg-purple-100 text-purple-800",
-                comments: [
-                    { user: "Clau_UDP", text: "Tengo la del 2023. Háblame por interno." },
-                    { user: "Admin", text: "Recuerden revisar el Marketplace, ahí hay un pack completo." }
-                ]
-            }
-        ];
+      <article id="cognoscitivo" class="node cognitive" style="left:970px; top:260px;">
+        <div class="head">Hombre cognoscitivo</div>
+        <div class="body">
+          Busca información antes de comprar.
+          <div class="more">
+            Revisa reseñas, comparaciones, videos técnicos y opiniones expertas.
+            <small>Compra cuando valida alternativas.</small>
+          </div>
+        </div>
+      </article>
 
-        let cart = [];
+      <article id="emocional" class="node emotional" style="left:1380px; top:260px;">
+        <div class="head">Hombre emocional</div>
+        <div class="body">
+          Compra por aspiración e identidad.
+          <div class="more">
+            Se conecta con éxito académico, estatus y futuro profesional.
+            <small>Compra la idea de sentirse preparado.</small>
+          </div>
+        </div>
+      </article>
 
-        // --- FUNCTIONS ---
+      <!-- RESPUESTAS A PREGUNTAS -->
+      <article id="resp-economico" class="node response" style="left:130px; top:455px;">
+        <div class="head">Respuesta clave</div>
+        <div class="body">
+          “¿Vale más por lo que cuesta?”
+          <div class="more">
+            Compara rendimiento, precio real, batería y peso frente a otras marcas.
+          </div>
+        </div>
+      </article>
 
-        function init() {
-            filterCourses();
-            renderCommunity();
-            lucide.createIcons();
-        }
+      <article id="resp-pasivo" class="node response" style="left:540px; top:455px;">
+        <div class="head">Respuesta clave</div>
+        <div class="body">
+          “La oferta me conviene ahora.”
+          <div class="more">
+            Promoción directa: mochila + Office gratis + anuncios repetidos.
+          </div>
+        </div>
+      </article>
 
-        function getSelectedValues(className) {
-            return Array.from(document.querySelectorAll(`.${className}:checked`)).map(cb => cb.value);
-        }
+      <article id="resp-cognoscitivo" class="node response" style="left:950px; top:455px;">
+        <div class="head">Respuesta clave</div>
+        <div class="body">
+          “Necesito comprobarlo.”
+          <div class="more">
+            Busca pruebas, reviews, benchmarks y validación de especialistas.
+          </div>
+        </div>
+      </article>
 
-        function filterCourses() {
-            const selectedUnis = getSelectedValues('uni-filter');
-            const selectedDiffs = getSelectedValues('diff-filter');
-            const sortMode = document.getElementById('sort-price').value;
-            const searchText = document.getElementById('course-search') ? document.getElementById('course-search').value.toLowerCase() : "";
+      <article id="resp-emocional" class="node response" style="left:1360px; top:455px;">
+        <div class="head">Respuesta clave</div>
+        <div class="body">
+          “Me acerca a mi futuro.”
+          <div class="more">
+            Lo asocia con metas, imagen personal, éxito y vida profesional.
+          </div>
+        </div>
+      </article>
 
-            let filtered = allCourses.filter(course => {
-                const matchUni = selectedUnis.includes(course.university);
-                const matchDiff = selectedDiffs.includes(course.difficulty);
-                const matchSearch = course.courseName.toLowerCase().includes(searchText) || course.university.toLowerCase().includes(searchText);
-                return matchUni && matchDiff && matchSearch;
-            });
+      <!-- NIVELES DE DECISION -->
+      <article id="nivel-economico" class="node level" style="left:155px; top:635px;">
+        <div class="head">Nivel de decisión</div>
+        <div class="body">
+          Extensiva
+          <div class="more">
+            Compra importante, alto análisis y comparación racional.
+          </div>
+        </div>
+      </article>
 
-            if (sortMode === 'asc') {
-                filtered.sort((a, b) => a.price - b.price);
-            } else if (sortMode === 'desc') {
-                filtered.sort((a, b) => b.price - a.price);
-            }
+      <article id="nivel-pasivo" class="node level" style="left:565px; top:635px;">
+        <div class="head">Nivel de decisión</div>
+        <div class="body">
+          Limitada
+          <div class="more">
+            No analiza todo: decide por estímulos y beneficios visibles.
+          </div>
+        </div>
+      </article>
 
-            renderGrid(filtered);
-        }
+      <article id="nivel-cognoscitivo" class="node level" style="left:975px; top:635px;">
+        <div class="head">Nivel de decisión</div>
+        <div class="body">
+          Extensiva
+          <div class="more">
+            Investiga, compara y reduce incertidumbre antes de comprar.
+          </div>
+        </div>
+      </article>
 
-        function renderGrid(courses) {
-            const grid = document.getElementById('course-grid');
-            const noResults = document.getElementById('no-results');
+      <article id="nivel-emocional" class="node level" style="left:1385px; top:635px;">
+        <div class="head">Nivel de decisión</div>
+        <div class="body">
+          Limitada
+          <div class="more">
+            Compra relevante, pero impulsada por aspiración y significado.
+          </div>
+        </div>
+      </article>
 
-            if (courses.length === 0) {
-                grid.innerHTML = '';
-                noResults.classList.remove('hidden');
-                return;
-            }
+      <!-- CAMPANA PARALELA -->
+      <article id="campana" class="node campaign" style="left:760px; top:835px;">
+        <div class="head">Campaña publicitaria integrada</div>
+        <div class="body">
+          “SmartBook X: tu futuro en tus manos”
+          <div class="more">
+            Una sola campaña: rendimiento + movilidad + precio + aspiración.
+            <small>Adapta el mensaje sin cambiar la promesa central.</small>
+          </div>
+        </div>
+      </article>
 
-            noResults.classList.add('hidden');
-            grid.innerHTML = courses.map(course => `
-                <div onclick="openCourseModal(${course.id})" class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-200 overflow-hidden flex flex-col cursor-pointer group">
-                    <div class="relative h-40 overflow-hidden">
-                      <img src="${course.image}" alt="${course.courseName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/800x400?text=Curso'">
-                      <span class="absolute top-3 right-3 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide ${course.difficultyColor} shadow-sm">
-                        ${course.difficulty}
-                      </span>
-                      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                         <span class="bg-white/90 text-slate-800 px-3 py-1.5 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">Ver Detalle</span>
-                      </div>
-                    </div>
-                    <div class="p-4 flex-grow flex flex-col">
-                      <div class="flex justify-between items-start mb-1">
-                          <div class="text-xs text-blue-600 font-semibold uppercase tracking-wider">${course.university}</div>
-                          <div class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full truncate max-w-[120px]" title="${course.creator}">
-                            <i data-lucide="user" class="w-3 h-3 inline"></i> ${course.creator}
-                          </div>
-                      </div>
-                      <h3 class="font-bold text-slate-800 text-lg mb-2 leading-tight">${course.courseName}</h3>
-                      <p class="text-slate-500 text-sm mb-4 line-clamp-2">${course.description}</p>
-                      
-                      <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <div class="flex flex-col">
-                          <span class="text-2xl font-bold text-slate-800">$${course.price.toLocaleString('es-CL')}</span>
-                          <div class="flex items-center gap-1 text-xs text-slate-500">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span>${course.rating} (${course.reviews})</span>
-                          </div>
-                        </div>
-                        <button onclick="event.stopPropagation(); addToCart(${course.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                          <i data-lucide="plus-circle" class="w-4 h-4"></i> Agregar
-                        </button>
-                      </div>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
+      <article id="key-economico" class="node key" style="left:80px; top:850px;">
+        <div class="head">Concepto clave</div>
+        <div class="body">
+          “Más rendimiento, más batería y menor peso por un precio real.”
+          <div class="more">
+            Infografías comparativas: datos visibles y verificables.
+          </div>
+        </div>
+      </article>
 
-        function openCourseModal(courseId) {
-            const course = allCourses.find(c => c.id === courseId);
-            if(!course) return;
+      <article id="key-pasivo" class="node key" style="left:420px; top:850px;">
+        <div class="head">Concepto clave</div>
+        <div class="body">
+          “Mochila + Office gratis por un año.”
+          <div class="more">
+            Beneficio inmediato, simple y fácil de recordar.
+          </div>
+        </div>
+      </article>
 
-            document.getElementById('course-modal-img').src = course.image;
-            document.getElementById('course-modal-title').innerText = course.courseName;
-            document.getElementById('course-modal-uni-badge').innerText = course.university;
-            document.getElementById('course-modal-prof').innerText = course.professor;
-            document.getElementById('course-modal-career').innerText = course.career;
-            document.getElementById('course-modal-diff').innerText = course.difficulty;
-            document.getElementById('course-modal-price').innerText = `$${course.price.toLocaleString('es-CL')}`;
-            
-            const buyBtn = document.getElementById('modal-buy-btn');
-            buyBtn.onclick = () => {
-                addToCart(course.id);
-                closeCourseModal();
-                toggleCart();
-            };
+      <article id="key-cognoscitivo" class="node key" style="left:1120px; top:850px;">
+        <div class="head">Concepto clave</div>
+        <div class="body">
+          “SmartBook X puesto a prueba.”
+          <div class="more">
+            Reviews, redes sociales, blogs, pruebas y comparativas.
+          </div>
+        </div>
+      </article>
 
-            document.getElementById('course-modal').classList.remove('hidden');
-            lucide.createIcons();
-        }
+      <article id="key-emocional" class="node key" style="left:1460px; top:850px;">
+        <div class="head">Concepto clave</div>
+        <div class="body">
+          “Tu futuro en tus manos.”
+          <div class="more">
+            Storytelling con estudiantes y jóvenes profesionales logrando metas.
+          </div>
+        </div>
+      </article>
 
-        function closeCourseModal() {
-            document.getElementById('course-modal').classList.add('hidden');
-        }
+      <!-- IMÁGENES EDITABLES: cambia src por la ruta de tus imágenes en GitHub -->
+      <article id="img-economico" class="node image-card" style="left:80px; top:1035px;">
+        <div class="head">Imagen: económico</div>
+        <div class="body">
+          <!-- CAMBIA ESTA RUTA: imagen para hombre económico -->
+          <img class="concept-img" src="/mnt/data/da4600fe-f4fb-46af-b547-04779685ea24.png" alt="Imagen hombre económico: comparación de precio y valor" />
+          <div class="img-caption">Datos, comparación y precio real.</div>
+        </div>
+      </article>
 
-        function renderCommunity() {
-            const feed = document.getElementById('community-feed');
-            feed.innerHTML = communityPosts.map(post => `
-                <div onclick="openModal(${post.id})" class="bg-white p-5 rounded-xl border border-slate-200 hover:border-blue-400 cursor-pointer transition shadow-sm group">
-                   <div class="flex items-start gap-4">
-                     <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition">
-                        ${post.author.charAt(0)}
-                     </div>
-                     <div class="flex-grow">
-                       <div class="flex justify-between items-start">
-                         <div>
-                            <span class="text-xs font-bold px-2 py-0.5 rounded mb-1 inline-block ${post.tagColor}">${post.university}</span>
-                            <h4 class="font-bold text-slate-800 group-hover:text-blue-700 transition">${post.title}</h4>
-                         </div>
-                         <span class="text-xs text-slate-400">Hace 2h</span>
-                       </div>
-                       <p class="text-sm text-slate-600 mt-2 line-clamp-2">${post.content}</p>
-                       <div class="flex gap-4 mt-3 text-xs text-slate-500">
-                         <span class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3 h-3"></i> ${post.comments.length} respuestas</span>
-                         <span class="flex items-center gap-1"><i data-lucide="thumbs-up" class="w-3 h-3"></i> 5 likes</span>
-                       </div>
-                     </div>
-                   </div>
-                </div>
-            `).join('');
-        }
+      <article id="img-pasivo" class="node image-card" style="left:420px; top:1035px;">
+        <div class="head">Imagen: pasivo</div>
+        <div class="body">
+          <!-- CAMBIA ESTA RUTA: imagen para hombre pasivo -->
+          <img class="concept-img" src="/mnt/data/d6035fb6-be51-4bfe-8fc1-185434f94008.png" alt="Imagen hombre pasivo: publicidad, promoción y oferta" />
+          <div class="img-caption">Promoción visible y beneficio inmediato.</div>
+        </div>
+      </article>
 
-        function openModal(postId) {
-            const post = communityPosts.find(p => p.id === postId);
-            if(!post) return;
+      <article id="img-cognoscitivo" class="node image-card" style="left:1120px; top:1035px;">
+        <div class="head">Imagen: cognoscitivo</div>
+        <div class="body">
+          <!-- CAMBIA ESTA RUTA: imagen para hombre cognoscitivo -->
+          <img class="concept-img" src="/mnt/data/52e83d5f-b79c-4ae5-870e-991a7ed0e7c4.png" alt="Imagen hombre cognoscitivo: análisis técnico y validación" />
+          <div class="img-caption">Pruebas, reviews y validación.</div>
+        </div>
+      </article>
 
-            document.getElementById('modal-title').innerText = post.title;
-            document.getElementById('modal-tag').innerText = post.university;
-            document.getElementById('modal-tag').className = `text-xs font-bold px-2 py-1 rounded mb-2 inline-block ${post.tagColor}`;
-            document.getElementById('modal-author').innerText = post.author;
-            document.getElementById('modal-content').innerText = post.content;
+      <article id="img-emocional" class="node image-card" style="left:1460px; top:1035px;">
+        <div class="head">Imagen: emocional</div>
+        <div class="body">
+          <!-- CAMBIA ESTA RUTA: imagen para hombre emocional -->
+          <img class="concept-img" src="/mnt/data/6e1ee219-b4a2-479f-86c4-feb8346cdbcb.png" alt="Imagen hombre emocional: aspiración académica y futuro" />
+          <div class="img-caption">Aspiración, futuro y estatus.</div>
+        </div>
+      </article>
 
-            const commentsDiv = document.getElementById('modal-comments');
-            commentsDiv.innerHTML = post.comments.map(c => `
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-xs text-slate-700">${c.user}</span>
-                        <span class="text-[10px] text-slate-400">Hace 1h</span>
-                    </div>
-                    <p class="text-sm text-slate-600">${c.text}</p>
-                </div>
-            `).join('');
+      <!-- ETICA -->
+      <article id="etica" class="node ethics" style="left:760px; top:1195px;">
+        <div class="head">Ética del neuromarketing</div>
+        <div class="body">
+          Influye, pero no manipula.
+          <div class="more">
+            <span class="tag">Información real</span>
+            <span class="tag">Beneficios verificables</span>
+            <span class="tag">Sin falsa urgencia</span>
+            <span class="tag">Sin ocultar riesgos</span>
+            <small>Perspectiva real: ayuda a decidir mejor, no fuerza la compra.</small>
+          </div>
+        </div>
+      </article>
 
-            document.getElementById('community-modal').classList.remove('hidden');
-        }
+    </section>
+  </main>
 
-        function closeModal() {
-            document.getElementById('community-modal').classList.add('hidden');
-        }
+  <script>
+    const defaultPositions = {};
 
-        function resetFilters() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-            document.getElementById('sort-price').value = 'default';
-            document.getElementById('course-search').value = '';
-            filterCourses();
-        }
+    const links = [
+      // Jerarquía producto > tipo de consumidor > respuesta > nivel
+      ['producto', 'economico', 'normal'],
+      ['producto', 'pasivo', 'normal'],
+      ['producto', 'cognoscitivo', 'normal'],
+      ['producto', 'emocional', 'normal'],
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                if(btn.dataset.target) {
-                    if(btn.dataset.target === tabId) {
-                        btn.classList.add('bg-blue-50', 'text-blue-600');
-                        btn.classList.remove('text-slate-600', 'hover:bg-slate-50');
-                    } else {
-                        btn.classList.remove('bg-blue-50', 'text-blue-600');
-                        btn.classList.add('text-slate-600', 'hover:bg-slate-50');
-                    }
-                }
-            });
-            document.getElementById('mobile-menu').classList.add('hidden');
-            lucide.createIcons();
-        }
+      ['economico', 'resp-economico', 'normal'],
+      ['pasivo', 'resp-pasivo', 'normal'],
+      ['cognoscitivo', 'resp-cognoscitivo', 'normal'],
+      ['emocional', 'resp-emocional', 'normal'],
 
-        function addToCart(courseId) {
-            const course = allCourses.find(c => c.id === courseId);
-            if (course) {
-                cart.push(course);
-                updateCartUI();
-            }
-        }
+      ['resp-economico', 'nivel-economico', 'normal'],
+      ['resp-pasivo', 'nivel-pasivo', 'normal'],
+      ['resp-cognoscitivo', 'nivel-cognoscitivo', 'normal'],
+      ['resp-emocional', 'nivel-emocional', 'normal'],
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
+      // Campaña en paralelo conectada a conceptos clave
+      ['campana', 'key-economico', 'campaign-link'],
+      ['campana', 'key-pasivo', 'campaign-link'],
+      ['campana', 'key-cognoscitivo', 'campaign-link'],
+      ['campana', 'key-emocional', 'campaign-link'],
 
-        function updateCartUI() {
-            const badge = document.getElementById('cart-badge');
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartTotal = document.getElementById('cart-total');
-            
-            badge.innerText = cart.length;
-            if (cart.length > 0) {
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
+      // Tipo de hombre conectado a concepto clave del notebook
+      ['economico', 'key-economico', 'campaign-link'],
+      ['pasivo', 'key-pasivo', 'campaign-link'],
+      ['cognoscitivo', 'key-cognoscitivo', 'campaign-link'],
+      ['emocional', 'key-emocional', 'campaign-link'],
 
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            cartTotal.innerText = `$${total.toLocaleString('es-CL')}`;
+      // Conceptos clave conectados a imágenes editables
+      ['key-economico', 'img-economico', 'campaign-link'],
+      ['key-pasivo', 'img-pasivo', 'campaign-link'],
+      ['key-cognoscitivo', 'img-cognoscitivo', 'campaign-link'],
+      ['key-emocional', 'img-emocional', 'campaign-link'],
 
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `
-                    <div class="text-center text-slate-400 py-10 flex flex-col items-center">
-                        <i data-lucide="shopping-bag" class="w-12 h-12 mb-2 opacity-50"></i>
-                        <p>Tu carrito está vacío</p>
-                    </div>
-                `;
-            } else {
-                cartItemsContainer.innerHTML = cart.map((item, index) => `
-                    <div class="flex items-start gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="w-16 h-16 rounded bg-slate-200 overflow-hidden flex-shrink-0">
-                             <img src="${item.image}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex-grow">
-                            <h4 class="text-sm font-bold text-slate-800 line-clamp-1">${item.courseName}</h4>
-                            <p class="text-xs text-slate-500">${item.university}</p>
-                            <p class="text-sm font-bold text-blue-600 mt-1">$${item.price.toLocaleString('es-CL')}</p>
-                        </div>
-                        <button onclick="removeFromCart(${index})" class="text-slate-400 hover:text-red-500 transition">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `).join('');
-            }
-            lucide.createIcons();
-        }
+      // Ética aborda la campaña, conceptos e imágenes
+      ['etica', 'campana', 'ethics-link'],
+      ['etica', 'key-economico', 'ethics-link'],
+      ['etica', 'key-pasivo', 'ethics-link'],
+      ['etica', 'key-cognoscitivo', 'ethics-link'],
+      ['etica', 'key-emocional', 'ethics-link'],
+      ['etica', 'img-economico', 'ethics-link'],
+      ['etica', 'img-pasivo', 'ethics-link'],
+      ['etica', 'img-cognoscitivo', 'ethics-link'],
+      ['etica', 'img-emocional', 'ethics-link']
+    ];
 
-        function toggleCart() {
-            const modal = document.getElementById('cart-modal');
-            modal.classList.toggle('hidden');
-        }
+    const svg = document.getElementById('connections');
+    const workspace = document.getElementById('workspace');
 
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
+    function saveDefaultPositions() {
+      document.querySelectorAll('.node').forEach(node => {
+        defaultPositions[node.id] = {
+          left: node.style.left,
+          top: node.style.top
+        };
+      });
+    }
 
-        // --- INIT ---
-        window.onload = init;
+    function centerOf(el) {
+      return {
+        x: el.offsetLeft + el.offsetWidth / 2,
+        y: el.offsetTop + el.offsetHeight / 2
+      };
+    }
 
-    </script>
+    function drawConnections() {
+      svg.innerHTML = '';
+      links.forEach(([fromId, toId, type]) => {
+        const from = document.getElementById(fromId);
+        const to = document.getElementById(toId);
+        if (!from || !to) return;
+
+        const a = centerOf(from);
+        const b = centerOf(to);
+        const midY = (a.y + b.y) / 2;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${a.x} ${a.y} C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`);
+        path.setAttribute('class', `line ${type}`);
+        svg.appendChild(path);
+      });
+    }
+
+    function makeDraggable(node) {
+      let dragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+      let moved = false;
+
+      node.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('button')) return;
+        dragging = true;
+        moved = false;
+        const rect = node.getBoundingClientRect();
+        const canvasRect = workspace.getBoundingClientRect();
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;
+        node.setPointerCapture(event.pointerId);
+        node.style.zIndex = 20;
+      });
+
+      node.addEventListener('pointermove', (event) => {
+        if (!dragging) return;
+        moved = true;
+        const canvasRect = workspace.getBoundingClientRect();
+        let x = event.clientX - canvasRect.left - offsetX;
+        let y = event.clientY - canvasRect.top - offsetY;
+
+        x = Math.max(0, Math.min(x, workspace.offsetWidth - node.offsetWidth));
+        y = Math.max(0, Math.min(y, workspace.offsetHeight - node.offsetHeight));
+
+        node.style.left = `${x}px`;
+        node.style.top = `${y}px`;
+        drawConnections();
+      });
+
+      node.addEventListener('pointerup', (event) => {
+        dragging = false;
+        node.releasePointerCapture(event.pointerId);
+        setTimeout(() => { node.style.zIndex = 2; }, 80);
+      });
+
+      node.addEventListener('click', () => {
+        if (moved) return;
+        node.classList.toggle('expanded');
+        setTimeout(drawConnections, 20);
+      });
+    }
+
+    function expandAll() {
+      document.querySelectorAll('.node').forEach(node => node.classList.add('expanded'));
+      setTimeout(drawConnections, 20);
+    }
+
+    function collapseAll() {
+      document.querySelectorAll('.node').forEach(node => node.classList.remove('expanded'));
+      setTimeout(drawConnections, 20);
+    }
+
+    function resetPositions() {
+      document.querySelectorAll('.node').forEach(node => {
+        if (!defaultPositions[node.id]) return;
+        node.style.left = defaultPositions[node.id].left;
+        node.style.top = defaultPositions[node.id].top;
+        node.classList.remove('expanded');
+      });
+      drawConnections();
+    }
+
+    document.querySelectorAll('.node').forEach(makeDraggable);
+    saveDefaultPositions();
+    drawConnections();
+    window.addEventListener('resize', drawConnections);
+  </script>
 </body>
 </html>
