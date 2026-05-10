@@ -34,20 +34,23 @@
     }
 
     header {
-      height: 58px;
-      padding: 8px 24px;
-      background: #111827;
-      border-bottom: 6px solid #facc15;
+      position: fixed;
+      top: 12px;
+      right: 16px;
+      z-index: 100;
+      padding: 0;
+      background: transparent;
+      border: none;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
     }
 
     .toolbar {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: flex-end;
     }
 
     button {
@@ -68,7 +71,7 @@
 
     #canvas {
       width: 100vw;
-      height: calc(100vh - 58px);
+      height: 100vh;
       overflow: auto;
       background:
         linear-gradient(rgba(17, 24, 39, 0.07) 2px, transparent 2px),
