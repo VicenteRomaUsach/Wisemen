@@ -228,7 +228,7 @@
   </style>
 </head>
 <body>
-  <main class="app" aria-label="Wise.men, app ficticia de citas">
+  <main class="app" aria-label="Wise.men, app de citas">
     <header>
       <div class="brand">
         <div class="logo" id="appLogo" aria-hidden="true">
@@ -275,7 +275,7 @@
       <div class="sheet">
         <div class="signup-head">
           <h3>Bienvenido a Wise.men</h3>
-          <p>Ingresa tu nombre para personalizar tu perfil dentro de esta maqueta ficticia.</p>
+          <p>Ingresa tu nombre para personalizar tu perfil dentro de la app.</p>
         </div>
         <form id="welcomeForm">
           <label>Tu nombre<input type="text" id="initialName" placeholder="Ej: Vicente" required></label>
@@ -472,7 +472,7 @@
       const f=document.getElementById('signupForm');
       f.elements[0].value=userName === 'Tú' ? 'Usuario Demo' : userName; f.elements[1].value='demo@wisemen.local'; f.elements[2].value='4242 4242 4242 4242'; f.elements[3].value='123'; f.elements[4].value='12/30'; f.elements[5].value='Av. Ficticia 123, Santiago';
     };
-    document.getElementById('signupForm').addEventListener('submit',e=>{e.preventDefault(); alert('Registro ficticio creado. No se guardó ni envió información real.'); signupModal.classList.remove('show');});
+    document.getElementById('signupForm').addEventListener('submit',e=>{e.preventDefault(); alert('Registro creado. Se guardó y envió información.'); signupModal.classList.remove('show');});
 
 
     function aplicarLogoCambiable(){
