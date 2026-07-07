@@ -341,8 +341,8 @@
       carla: 'carla.png',
       yonicua: 'yonicua.png',
       annie: 'annie.png', // Corregido: se agregó la 'i'
-      watonia: 'watonia.png',
-      isiFran: 'isi-fran.png' // Corregido: se eliminó el espacio inicial
+      watonia: 'watonia.PNG',
+      isiFran: 'fran-isi.png' // Corregido: se eliminó el espacio inicial
     };
 
     const profiles = [
@@ -470,7 +470,7 @@
     document.getElementById('closeSignup').onclick = ()=>signupModal.classList.remove('show');
     document.getElementById('demoFill').onclick = ()=>{
       const f=document.getElementById('signupForm');
-      f.elements[0].value=userName === 'Tú' ? 'Usuario Demo' : userName; f.elements[1].value='demo@wisemen.local'; f.elements[2].value='4242 4242 4242 4242'; f.elements[3].value='123'; f.elements[4].value='12/30'; f.elements[5].value='Av. Ficticia 123, Santiago';
+      f.elements[0].value=userName === 'Tú' ? ' ' : userName; f.elements[1].value=' @gmail.com'; f.elements[2].value=' '; f.elements[3].value=' '; f.elements[4].value=' '; f.elements[5].value=' ';
     };
     document.getElementById('signupForm').addEventListener('submit',e=>{e.preventDefault(); alert('Registro creado. Se guardó y envió información.'); signupModal.classList.remove('show');});
 
