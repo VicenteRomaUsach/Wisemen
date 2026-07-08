@@ -1,1 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wise.men — Swipe Dating App</title>
+  <style>
+    :root{
+      --cream:#fff7f0;
+      --paper:#ffffff;
+      --ink:#22181c;
+      --muted:#7c7078;
+      --line:#efe3da;
+      --brand:#e54866;
+      --brand2:#fd8b54;
+      --gold:#c89b55;
+      --green:#2eb67d;
+      --blue:#4d79ff;
+      --shadow:0 26px 65px rgba(36,21,26,.25);
+      --soft:0 10px 30px rgba(36,21,26,.12);
+      --radius:28px;
+    }
+
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      color:var(--ink);
+      display:flex;
+      justify-content:center;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(229,72,102,.17), transparent 34%),
+        radial-gradient(circle at 90% 12%, rgba(253,139,84,.16), transparent 32%),
+        linear-gradient(180deg,#fff7f0 0%,#f7e8dc 55%,#edd8c9 100%);
+      overflow:hidden;
+    }
+
+    .app{
+      width:min(430px,100vw);
+      height:100dvh;
+      min-height:700px;
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,247,240,.92)),
+        repeating-linear-gradient(45deg,rgba(200,155,85,.05) 0 1px,transparent 1px 16px);
+      box-shadow:0 0 0 1px rgba(91,56,56,.08);
+      display:flex;
+      flex-direction:column;
+    }
+
+    header{
+      height:84px;
+      padding:16px 18px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      z-index:10;
+    }
+
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:54px;height:54px;border-radius:18px;
+      background:linear-gradient(145deg,#fff,#f5dfc8);
+      border:1px solid rgba(130,84,54,.24);
+      box-shadow:var(--soft);
+      display:grid;place-items:center;
+    }
+    .logo svg{width:45px;height:45px;display:block}
+    .logo.custom-logo{background:center/cover no-repeat #fff;border-radius:18px}
+    .logo.custom-logo svg{display:none}
+    .brand-title{line-height:.88}
+    .brand-title b{
+      display:block;font-size:1.65rem;letter-spacing:-.05em;color:#331b21;
+    }
+    .brand-title span{
+      display:block;margin-top:5px;font-family:Arial,sans-serif;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:#9a6b55;
+    }
+
+    .top-btn{
+      width:42px;height:42px;border-radius:999px;border:1px solid rgba(98,54,43,.16);
+      background:#fff;display:grid;place-items:center;box-shadow:var(--soft);font-size:1.2rem;
+    }
+
+    .headline{
+      padding:0 20px 10px;
+      font-family:Arial,sans-serif;
+      display:flex;align-items:center;justify-content:space-between;color:#81625a;font-size:.84rem;
+    }
+    .headline strong{color:#372228;font-family:Georgia,"Times New Roman",serif;font-size:1.05rem}
+    .pill{padding:7px 10px;border-radius:99px;background:#fff;border:1px solid var(--line);box-shadow:0 7px 18px rgba(36,21,26,.07)}
+
+    .deck{
+      position:relative;
+      flex:1;
+      min-height:0;
+      padding:0 15px 98px;
+      display:grid;
+      place-items:center;
+    }
+
+    .card{
+      position:absolute;
+      width:calc(100% - 30px);
+      max-width:396px;
+      height:100%;
+      max-height:590px;
+      min-height:500px;
+      border-radius:32px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(118,82,62,.13);
+      transform-origin:50% 92%;
+      transition:transform .28s ease,opacity .25s ease;
+      user-select:none;
+      touch-action:none;
+    }
+    .card:nth-last-child(2){transform:translateY(9px) scale(.97)}
+    .card:nth-last-child(3){transform:translateY(18px) scale(.94)}
+
+    .photo{
+      height:72%;
+      position:relative;
+      background:#ead9cb center/cover no-repeat;
+    }
+    .photo:after{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(180deg,transparent 36%,rgba(0,0,0,.28) 66%,rgba(0,0,0,.73) 100%);
+    }
+    .verified{
+      position:absolute;z-index:2;top:16px;left:16px;
+      font-family:Arial,sans-serif;font-weight:800;font-size:.75rem;color:#53322b;
+      background:rgba(255,255,255,.92);padding:8px 10px;border-radius:99px;box-shadow:0 8px 18px rgba(0,0,0,.13);
+    }
+    .distance{
+      position:absolute;z-index:2;top:16px;right:16px;
+      font-family:Arial,sans-serif;font-size:.75rem;color:#fff;
+      background:rgba(0,0,0,.28);backdrop-filter:blur(8px);padding:8px 10px;border-radius:99px;
+    }
+    .nameblock{position:absolute;left:20px;right:20px;bottom:18px;z-index:2;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+    .nameblock h2{margin:0;font-size:2.45rem;letter-spacing:-.05em;line-height:.95}
+    .nameblock .meta{margin-top:7px;font-family:Arial,sans-serif;font-size:.92rem;opacity:.94;display:flex;gap:8px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:99px;background:rgba(255,255,255,.18);backdrop-filter:blur(5px)}
+
+    .info{
+      height:28%;
+      padding:16px 18px 17px;
+      display:flex;flex-direction:column;gap:10px;
+    }
+    .bio{
+      margin:0;font-family:Arial,sans-serif;font-size:.94rem;line-height:1.34;color:#4d4044;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    }
+    .tags{display:flex;gap:7px;flex-wrap:wrap;overflow:hidden;max-height:34px}
+    .tag{font-family:Arial,sans-serif;font-size:.73rem;padding:7px 9px;border-radius:99px;background:#fff3ee;color:#8c4a40;border:1px solid #f2d7cd}
+    .quote{margin-top:auto;font-size:.88rem;color:#9c7259;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .stamp{
+      position:absolute;z-index:5;top:78px;padding:10px 16px;border:5px solid;font-family:Arial,sans-serif;font-size:1.55rem;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;border-radius:12px;opacity:0;transform:rotate(-14deg);background:rgba(255,255,255,.08)
+    }
+    .stamp.like{left:23px;color:#2eb67d;border-color:#2eb67d}
+    .stamp.nope{right:23px;color:#e54866;border-color:#e54866;transform:rotate(14deg)}
+
+    .actions{
+      position:absolute;left:0;right:0;bottom:74px;z-index:20;
+      display:flex;justify-content:center;gap:18px;pointer-events:none;
+    }
+    .actions.hidden{display:none}
+    .action{
+      pointer-events:auto;width:66px;height:66px;border-radius:999px;border:0;background:#fff;box-shadow:0 13px 30px rgba(72,42,48,.18);display:grid;place-items:center;font-size:1.75rem;cursor:pointer;
+    }
+    .action.small{width:53px;height:53px;font-size:1.25rem;margin-top:7px;color:#c89b55}
+    .action.no{color:#e54866}.action.yes{color:#2eb67d}.action.super{color:#4d79ff}
+    .action:active{transform:scale(.94)}
+
+    nav{
+      position:absolute;left:14px;right:14px;bottom:13px;height:55px;border-radius:22px;background:rgba(255,255,255,.92);border:1px solid rgba(128,81,58,.14);box-shadow:0 16px 36px rgba(63,38,42,.16);display:flex;align-items:center;justify-content:space-around;font-family:Arial,sans-serif;color:#9a827a;font-size:.72rem;z-index:30;
+    }
+    nav div{display:grid;place-items:center;gap:2px;min-width:50px}
+    nav b{font-size:1.18rem}
+    nav .active{color:var(--brand)}
+    nav .nav-item{cursor:pointer}
+
+    .modal{
+      position:absolute;inset:0;z-index:100;background:rgba(32,18,24,.48);backdrop-filter:blur(9px);display:none;align-items:center;justify-content:center;padding:18px;
+    }
+    .modal.show{display:flex;animation:fade .18s ease both}@keyframes fade{from{opacity:0}to{opacity:1}}
+    .sheet{
+      width:100%;max-width:390px;background:#fff;border-radius:30px;box-shadow:0 35px 90px rgba(0,0,0,.32);overflow:hidden;border:1px solid rgba(124,77,50,.16);
+    }
+    .match-top{
+      min-height:310px;padding:26px 20px 20px;text-align:center;color:#fff;background:linear-gradient(135deg,var(--brand),var(--brand2));position:relative;overflow:hidden;
+    }
+    .match-top:before,.match-top:after{content:"";position:absolute;border-radius:999px;background:rgba(255,255,255,.15)}
+    .match-top:before{width:220px;height:220px;left:-70px;top:-90px}.match-top:after{width:190px;height:190px;right:-70px;bottom:-70px}
+    .match-title{position:relative;z-index:2;font-size:2.35rem;line-height:.92;letter-spacing:-.06em;margin:0 0 8px;text-shadow:0 4px 12px rgba(0,0,0,.14)}
+    .match-copy{position:relative;z-index:2;font-family:Arial,sans-serif;margin:0 auto 18px;max-width:280px;line-height:1.35;opacity:.96}
+    .faces{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;margin:10px 0 17px}
+    .face{width:114px;height:114px;border-radius:999px;background:center/cover no-repeat;border:5px solid #fff;box-shadow:0 13px 28px rgba(0,0,0,.22)}
+    .face:first-child{margin-right:-12px}
+    .user-icon{background:#f3e7df!important;display:grid;place-items:center;position:relative}
+    .user-icon:before{content:"";width:42px;height:42px;border-radius:999px;background:#9b8177;position:absolute;top:22px}
+    .user-icon:after{content:"";width:76px;height:42px;border-radius:999px 999px 28px 28px;background:#9b8177;position:absolute;bottom:18px}
+    .user-name{position:absolute;bottom:-31px;left:50%;transform:translateX(-50%);font-family:Arial,sans-serif;font-weight:800;font-size:.75rem;background:#fff;color:#7a4e48;padding:5px 9px;border-radius:99px;box-shadow:0 7px 14px rgba(0,0,0,.15);white-space:nowrap}
+    .face:last-child{margin-left:-12px}
+    .heart{z-index:3;width:52px;height:52px;border-radius:999px;background:#fff;display:grid;place-items:center;color:var(--brand);font-size:1.55rem;box-shadow:0 10px 22px rgba(0,0,0,.19)}
+    .sheet-body{padding:19px 18px 20px;background:#fff}
+    .primary,.secondary{
+      width:100%;height:52px;border:0;border-radius:17px;font-family:Arial,sans-serif;font-weight:900;font-size:.96rem;cursor:pointer;
+    }
+    .primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 12px 25px rgba(229,72,102,.25)}
+    .secondary{margin-top:9px;background:#f7eee8;color:#7f6256}
+
+    .signup .sheet{max-height:94dvh;overflow:auto}
+    .signup-head{padding:22px 20px 14px;border-bottom:1px solid var(--line);background:#fffaf6}
+    .signup-head h3{margin:0 0 6px;font-size:1.75rem;letter-spacing:-.04em}.signup-head p{margin:0;font-family:Arial,sans-serif;color:#7f6b70;font-size:.9rem;line-height:1.34}
+    form{padding:16px 18px 19px;display:grid;gap:11px;font-family:Arial,sans-serif}
+    label{display:grid;gap:6px;font-size:.76rem;font-weight:800;color:#694d47;text-transform:uppercase;letter-spacing:.06em}
+    input,textarea,select{
+      width:100%;border:1px solid #eadbd3;background:#fffaf7;border-radius:14px;padding:13px 12px;font:inherit;font-size:.95rem;color:#2c2024;outline:none;
+    }
+    input:focus,textarea:focus,select:focus{border-color:#e54866;box-shadow:0 0 0 4px rgba(229,72,102,.10)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tiny{font-size:.75rem;line-height:1.35;color:#8d7770;text-transform:none;font-weight:500;letter-spacing:0;background:#fff8f4;border:1px dashed #e3c9bd;padding:10px;border-radius:13px}
+    .close{position:absolute;top:14px;right:14px;width:38px;height:38px;border:0;border-radius:99px;background:rgba(255,255,255,.85);font-size:1.2rem;z-index:3;cursor:pointer}
+
+    .empty{font-family:Arial,sans-serif;text-align:center;color:#7f6b70;background:#fff;border-radius:28px;padding:32px 22px;box-shadow:var(--soft);max-width:360px}
+    .empty h2{font-family:Georgia,"Times New Roman",serif;color:#321f24;font-size:1.7rem;margin:0 0 8px}
+
+    .view-deck{
+      display:block;
+      place-items:unset;
+      overflow-y:auto;
+      padding:0 16px 88px;
+    }
+
+    .view-panel{
+      width:100%;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--soft);
+      padding:18px;
+      font-family:Arial,sans-serif;
+    }
+
+    .view-panel h2{
+      margin:0 0 8px;
+      font-family:Georgia,"Times New Roman",serif;
+      color:#321f24;
+      font-size:1.7rem;
+      letter-spacing:-.04em;
+    }
+
+    .view-panel p{
+      margin:0;
+      color:#7f6b70;
+      line-height:1.35;
+    }
+
+    .chat-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .chat-row{
+      width:100%;
+      border:1px solid #eadbd3;
+      background:#fff;
+      border-radius:20px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      text-align:left;
+      cursor:pointer;
+      box-shadow:0 7px 18px rgba(36,21,26,.06);
+    }
+
+    .chat-row:active{
+      transform:scale(.99);
+    }
+
+    .avatar-empty{
+      width:48px;
+      height:48px;
+      border-radius:999px;
+      background:#f2e4dc;
+      border:1px solid #dfc8bd;
+      display:grid;
+      place-items:center;
+      color:#9a8177;
+      font-size:1.25rem;
+      flex:0 0 auto;
+    }
+
+    .chat-main{
+      min-width:0;
+      flex:1;
+    }
+
+    .chat-main b{
+      display:block;
+      color:#321f24;
+      font-size:.96rem;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .chat-main span{
+      display:block;
+      margin-top:4px;
+      color:#8b7770;
+      font-size:.83rem;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .chat-time{
+      color:#b39b92;
+      font-size:.72rem;
+      align-self:flex-start;
+      padding-top:4px;
+    }
+
+    .chat-window{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .chat-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-bottom:10px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .back-chat{
+      width:38px;
+      height:38px;
+      border-radius:999px;
+      border:1px solid #eadbd3;
+      background:#fff7f0;
+      cursor:pointer;
+      font-size:1.1rem;
+    }
+
+    .bubble{
+      max-width:78%;
+      padding:11px 13px;
+      border-radius:18px 18px 18px 5px;
+      background:#fff3ee;
+      color:#4d4044;
+      line-height:1.35;
+      font-size:.94rem;
+    }
+
+    .bubble.me{
+      align-self:flex-end;
+      border-radius:18px 18px 5px 18px;
+      background:#f0f4ff;
+      color:#2d3c73;
+    }
+
+    .seen{
+      display:block;
+      margin-top:5px;
+      font-size:.72rem;
+      color:#6f82d8;
+      text-align:right;
+    }
+
+    .profile-panel{
+      text-align:center;
+    }
+
+    .profile-name{
+      font-size:2rem;
+      font-family:Georgia,"Times New Roman",serif;
+      margin:4px 0 12px;
+      letter-spacing:-.05em;
+    }
+
+    .locked-data{
+      margin-top:14px;
+      border:1px dashed #e3c9bd;
+      background:#fff8f4;
+      border-radius:18px;
+      padding:13px;
+      color:#8d7770;
+      font-size:.85rem;
+      line-height:1.35;
+    }
+
+    .profile-extra{
+      margin-top:14px;
+      display:grid;
+      gap:10px;
+      text-align:left;
+    }
+
+    @media(max-height:720px){.app{min-height:100dvh}.card{max-height:530px;min-height:450px}.actions{bottom:68px}.nameblock h2{font-size:2.08rem}.photo{height:70%}.info{height:30%}header{height:72px;padding-top:10px}.logo{width:48px;height:48px}.brand-title b{font-size:1.45rem}}
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Wise.men, app de citas">
+    <header>
+      <div class="brand">
+        <div class="logo" id="appLogo" aria-hidden="true">
+          <svg viewBox="0 0 100 100" role="img" aria-label="Yorkshire elegante">
+            <defs><linearGradient id="fur" x1="0" x2="1"><stop stop-color="#d7a66a"/><stop offset="1" stop-color="#7a4e32"/></linearGradient></defs>
+            <path d="M24 42c-10-4-14-20-6-27 8 5 15 13 18 22" fill="#6b432d"/>
+            <path d="M76 42c10-4 14-20 6-27-8 5-15 13-18 22" fill="#6b432d"/>
+            <ellipse cx="50" cy="47" rx="31" ry="30" fill="url(#fur)"/>
+            <path d="M28 45c8-13 35-16 44 0-4 22-12 34-22 34S32 67 28 45z" fill="#e7c18c"/>
+            <path d="M43 51c1 7 3 13 7 22 4-9 6-15 7-22" fill="#7b4d32" opacity=".38"/>
+            <circle cx="39" cy="44" r="4.2" fill="#1d1614"/><circle cx="61" cy="44" r="4.2" fill="#1d1614"/>
+            <path d="M44 58c4 4 8 4 12 0" fill="none" stroke="#33201b" stroke-width="3" stroke-linecap="round"/>
+            <path d="M45 54h10l-5 5z" fill="#2b1b18"/>
+            <path d="M34 80h32l-8 12H42z" fill="#251617"/><path d="M43 80l7 7 7-7" fill="#fff"/><path d="M40 84h20" stroke="#c89b55" stroke-width="3"/>
+          </svg>
+        </div>
+        <div class="brand-title"><b>Wise.men</b><span>¿que opinas de esto?</span></div>
+      </div>
+      <button class="top-btn" title="Ajustes">☰</button>
+    </header>
+
+    <section class="headline">
+      <span><strong>Descubrir</strong> cerca de ti</span>
+      <span class="pill">Perfiles destacados</span>
+    </section>
+
+    <section class="deck" id="deck"></section>
+
+    <div class="actions">
+      <button class="action no" id="noBtn" aria-label="rechazar">×</button>
+      <button class="action small super" id="superBtn" aria-label="super like">★</button>
+      <button class="action yes" id="yesBtn" aria-label="me gusta">♥</button>
+    </div>
+
+    <nav>
+      <div class="nav-item active" data-view="swipe"><b>♥</b><span>Swipe</span></div>
+      <div class="nav-item" data-view="likes"><b>☷</b><span>Likes</span></div>
+      <div class="nav-item" data-view="chats"><b>✉</b><span>Chats</span></div>
+      <div class="nav-item" data-view="profile"><b>♛</b><span>Perfil</span></div>
+    </nav>
+
+
+    <div class="modal show" id="welcomeModal">
+      <div class="sheet">
+        <div class="signup-head">
+          <h3>Bienvenido a Wise.men</h3>
+          <p>Ingresa tu nombre para personalizar tu perfil dentro de la app.</p>
+        </div>
+        <form id="welcomeForm">
+          <label>Tu nombre<input type="text" id="initialName" placeholder="Ej: Federico" required></label>
+          <button class="primary" type="submit">Entrar a la app</button>
+          <div class="tiny">una apps para cerdos.</div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="matchModal">
+      <div class="sheet">
+        <div class="match-top">
+          <button class="close" id="closeMatch">×</button>
+          <h2 class="match-title">¡Es un match!</h2>
+          <p class="match-copy">Tú y <span id="matchName">Isi Fran Epstein</span> hicieron match :3!. Rompe el hielo con un mensaje.</p>
+          <div class="faces">
+            <div class="face user-icon"><span class="user-name" id="userMatchName">Tú</span></div>
+            <div class="heart">♥</div>
+            <div class="face" id="matchFace"></div>
+          </div>
+        </div>
+        <div class="sheet-body">
+          <button class="primary" id="writeBtn">Escribirle a <span id="writeName">Isi Fran Epstein</span></button>
+          <button class="secondary" id="keepSwiping">Suicidarme</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal signup" id="signupModal">
+      <div class="sheet">
+        <button class="close" id="closeSignup">×</button>
+        <div class="signup-head">
+          <h3>Actualización premium</h3>
+          <p>Para guardar los cambios de tu perfil, Wise.men necesita verificar tu método de pago.</p>
+        </div>
+        <form id="signupForm">
+          <label>Nombre del titular<input type="text" name="nombre" placeholder="Ej: Federico Von Semen" required></label>
+          <label>Correo electrónico<input type="email" name="mail" placeholder="tu@email.com" required></label>
+          <label>Número de tarjeta<input type="text" inputmode="numeric" maxlength="19" placeholder="4345 1247 5681 1245" required></label>
+          <div class="grid">
+            <label>CVV<input type="text" inputmode="numeric" maxlength="3" placeholder="123" required></label>
+            <label>Vence<input type="text" inputmode="numeric" maxlength="5" placeholder="MM/AA" required></label>
+          </div>
+          <label>Dirección de facturación<textarea rows="2" placeholder="Calle, comuna, ciudad" required></textarea></label>
+          <div class="tiny">Wise.men Premium: guardar cambios, ver likes y recuperar dignidad.</div>
+          <button class="primary" type="submit">Pagar y guardar cambios</button>
+          <button class="secondary" type="button" id="Fill">Rellenar con datos reales</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /*
+      IMÁGENES CAMBIABLES PARA GITHUB:
+      Cambia estas URLs por rutas de tu repositorio, por ejemplo:
+      img/logo.png, img/carla.jpg, img/yonicua.jpg, img/annie.jpg, img/watonia.jpg, img/isi-fran.jpg
+      También puedes dejar URLs externas de stock. No cambia la lógica de la app.
+      Si dejas logo: '' se mantiene el yorkshire SVG por defecto.
+    */
+    const IMAGENES_CAMBIABLES = {
+      logo: 'logo.png',
+      carla: 'carla.png',
+      yonicua: 'yonicua.png',
+      annie: 'annie.png',
+      watonia: 'watonia.PNG',
+      isiFran: 'fran-isi.png'
+    };
+
+    const profiles = [
+      {
+        name:'Carla Certera', age:32, height:'1.60 m', status:'´Casada´', distance:'8 km',
+        img: IMAGENES_CAMBIABLES.carla,
+        bio:'Soy tranquila, me gusta salir por café, conversar sin apuro y conocer gente con tema. Estoy casada, así que prefiero ir con las cosas claras desde el principio.',
+        tags:['Cafés','Conversadora','Sin apuro'], quote:'“Me gustan los hombres con tema de conversación.”'
+      },
+      {
+        name:'Yonicua Yusmary', age:27, height:'1.66 m', status:'Recién llegada', distance:'14 km',
+        img: IMAGENES_CAMBIABLES.yonicua,
+        bio:'Soy venezolana, directa y trabajadora. Estoy juntando dinero para que mi primo venga al país con sus sobrinos; aclaro de una: no son mis hijos ni mi marido.',
+        tags:['Arepas','Familia','Directa'], quote:'“que opinas de esto?”'
+      },
+      {
+        name:'Annie Diddy', age:25, height:'1.78 m', status:'Semi mujer', distance:'19 km',
+        img: IMAGENES_CAMBIABLES.annie,
+        bio:'Juego LoL y Overwatch, soy main Venture, Manzana de adan, madibula cuadrada, hombros anchos',
+        tags:['Anime','LoL','Overwatch','Main Venture'], quote:'“Si pierdo ranked, igual mando fotopolla.”'
+      },
+      {
+        name:"Valentina Von' S.", age:29, height:'1.50 m', status:'Soltera', distance:'11 km',
+        img: IMAGENES_CAMBIABLES.watonia,
+        bio:'Tengo cuerpo grande, personalidad más grande y cero paciencia para los pichacorter.',
+        tags:['Carrete','After','Sin filtro'], quote:'“buscando mi galactus”'
+      },
+      {
+        name:'Isi Fran Epstein', age:22, height:'1.67 m', status:'Soltera', distance:'1 km',
+        img: IMAGENES_CAMBIABLES.isiFran,
+        bio:'Soy frentona, fan del humor negro JEJE :3. no apta para cristalitos.',
+        tags:['Humor negro','Memes','Sin cristalitos'], quote:'“JEJE :3”'
+      }
+    ];
+
+    const chatsWise = [
+      { name:'Camila Rivas', last:'que opinas de esto?' },
+      { name:'Fernanda Lagos', last:'que opinas de esto?' },
+      { name:'Valeria Soto', last:'que opinas de esto?' },
+      { name:'Antonia Herrera', last:'que opinas de esto?' },
+      { name:'Josefa Morales', last:'que opinas de esto?' },
+      { name:'Martina Pizarro', last:'que opinas de esto?' },
+      { name:'Isidora Araya', last:'que opinas de esto?' },
+      { name:'Catalina Fuentes', last:'que opinas de esto?' },
+      { name:'Daniela Cordero', last:'que opinas de esto?' },
+      { name:'Francisca Vidal', last:'que opinas de esto?' }
+    ];
+
+    const deck = document.getElementById('deck');
+    const matchModal = document.getElementById('matchModal');
+    const signupModal = document.getElementById('signupModal');
+    const matchName = document.getElementById('matchName');
+    const writeName = document.getElementById('writeName');
+    const matchFace = document.getElementById('matchFace');
+    let current = 0;
+    let swipes = 0;
+    let userName = 'Tú';
+    let locked = false;
+    let activeScreen = 'swipe';
+    let hasMatch = false;
+
+    const actionsBar = document.querySelector('.actions');
+    const navItems = document.querySelectorAll('.nav-item');
+    const headlineTitle = document.querySelector('.headline strong');
+    const headlinePill = document.querySelector('.headline .pill');
+
+    function safe(text){
+      return String(text).replace(/[&<>"']/g, ch => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#039;'
+      }[ch]));
+    }
+
+    function render(){
+      if(activeScreen !== 'swipe') return;
+      deck.className = 'deck';
+      actionsBar.classList.remove('hidden');
+
+      deck.innerHTML = '';
+      const remaining = profiles.slice(current, current + 3).reverse();
+      if(current >= profiles.length){
+        deck.innerHTML = `<div class="empty"><h2>los datos que pusiste no son reales :c</h2><p>wisemen esta decepcionado de ti.</p></div>`;
+        return;
+      }
+      remaining.forEach((p, revIndex)=>{
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.dataset.index = profiles.indexOf(p);
+        card.innerHTML = `
+          <div class="stamp like">Like</div><div class="stamp nope">Nope</div>
+          <div class="photo" style="background-image:url('${p.img}')">
+            <span class="verified">♛ Verificado</span>
+            <span class="distance">${p.distance}</span>
+            <div class="nameblock"><h2>${p.name}, ${p.age}</h2><div class="meta"><span class="badge">${p.height}</span><span class="badge">${p.status}</span></div></div>
+          </div>
+          <div class="info"><p class="bio">${p.bio}</p><div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="quote">${p.quote}</div></div>`;
+        deck.appendChild(card);
+      });
+      bindTopCard();
+    }
+
+    function bindTopCard(){
+      const card = deck.querySelector('.card:last-child');
+      if(!card) return;
+      let startX=0,startY=0,dx=0,dragging=false;
+      const like = card.querySelector('.like');
+      const nope = card.querySelector('.nope');
+      function start(e){ if(locked) return; dragging=true; const t=e.touches?e.touches[0]:e; startX=t.clientX; startY=t.clientY; card.style.transition='none'; }
+      function move(e){ if(!dragging) return; const t=e.touches?e.touches[0]:e; dx=t.clientX-startX; const dy=t.clientY-startY; card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/16}deg)`; like.style.opacity=Math.max(0,Math.min(1,dx/95)); nope.style.opacity=Math.max(0,Math.min(1,-dx/95)); }
+      function end(){ if(!dragging) return; dragging=false; card.style.transition='transform .28s ease, opacity .22s ease'; if(Math.abs(dx)>105){ swipe(dx>0?'yes':'no'); } else { card.style.transform=''; like.style.opacity=0; nope.style.opacity=0; } dx=0; }
+      card.addEventListener('pointerdown',start); window.addEventListener('pointermove',move); window.addEventListener('pointerup',end);
+      card.addEventListener('touchstart',start,{passive:true}); card.addEventListener('touchmove',move,{passive:true}); card.addEventListener('touchend',end);
+    }
+
+    function swipe(kind){
+      if(locked || current >= profiles.length) return;
+      locked = true;
+      const card = deck.querySelector('.card:last-child');
+      const p = profiles[current];
+      swipes++;
+      if(card){
+        card.style.transform = kind === 'yes' ? 'translate(520px,-30px) rotate(21deg)' : 'translate(-520px,-30px) rotate(-21deg)';
+        card.style.opacity = '0';
+      }
+      setTimeout(()=>{
+        current++;
+        locked = false;
+        render();
+        if(swipes === 5){ openMatch(p); }
+      },260);
+    }
+
+    function openMatch(p){
+      hasMatch = true;
+      matchName.textContent = p.name;
+      writeName.textContent = p.name;
+      matchFace.style.backgroundImage = `url('${p.img}')`;
+      document.getElementById('userMatchName').textContent = userName;
+      matchModal.classList.add('show');
+    }
+
+    function setScreen(screen){
+      activeScreen = screen;
+
+      function openPaymentPopup(){
+      signupModal.classList.add('show');
+    }
+
+    navItems.forEach(item=>{
+        item.classList.toggle('active', item.dataset.view === screen);
+      });
+
+      actionsBar.classList.toggle('hidden', screen !== 'swipe');
+
+      const titles = {
+        swipe:'Descubrir',
+        likes:'Likes',
+        chats:'Chats',
+        profile:'Perfil'
+      };
+
+      const pills = {
+        swipe:'Perfiles destacados',
+        likes:'Sin opiniones',
+        chats:'Mensajes',
+        profile:'Tu cuenta'
+      };
+
+      headlineTitle.textContent = titles[screen] || 'Wise.men';
+      headlinePill.textContent = pills[screen] || '';
+
+      if(screen === 'swipe') render();
+      if(screen === 'likes') renderLikes();
+      if(screen === 'chats') renderChats();
+      if(screen === 'profile') renderProfile();
+    }
+
+    function renderLikes(){
+      deck.className = 'deck view-deck';
+      deck.innerHTML = `
+        <div class="view-panel">
+          <h2>Likes</h2>
+          <p>parece que nadie quiere opinar de esto</p>
+        </div>
+      `;
+    }
+
+    function renderChats(){
+      deck.className = 'deck view-deck';
+      deck.innerHTML = `
+        <div class="chat-list">
+          ${chatsWise.map((chat, index)=>`
+            <button class="chat-row" onclick="openChat(${index})">
+              <div class="avatar-empty">♙</div>
+              <div class="chat-main">
+                <b>${safe(chat.name)}</b>
+                <span>${safe(chat.last)}</span>
+              </div>
+              <div class="chat-time">visto</div>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function openChat(index){
+      const chat = chatsWise[index];
+
+      deck.className = 'deck view-deck';
+      headlineTitle.textContent = 'Chat';
+      headlinePill.textContent = 'Sin respuestas';
+
+      deck.innerHTML = `
+        <div class="view-panel chat-window">
+          <div class="chat-header">
+            <button class="back-chat" onclick="setScreen('chats')">‹</button>
+            <div class="avatar-empty">♙</div>
+            <div class="chat-main">
+              <b>${safe(chat.name)}</b>
+              <span>sin foto de perfil</span>
+            </div>
+          </div>
+
+          <div class="bubble me">
+            📷 Foto
+          </div>
+
+          <div class="bubble me">
+            que opinas de esto?
+            <span class="seen">✓✓ leído</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProfile(){
+      deck.className = 'deck view-deck';
+
+      deck.innerHTML = `
+        <div class="view-panel profile-panel">
+          <h2>Perfil</h2>
+          <div class="profile-name">${safe(userName)}</div>
+
+          ${
+            hasMatch
+              ? `
+                <div class="profile-extra">
+                  <label>Edad<input type="text" placeholder="Agregar después del match"></label>
+                  <label>Bio<textarea rows="3" placeholder="Escribe algo sobre ti"></textarea></label>
+                  <label>Intereses<input type="text" placeholder="Ej: memes, gimnasio, café"></label>
+                  <button class="primary" type="button" onclick="openPaymentPopup()">Guardar cambios</button>
+                </div>
+              `
+              : `
+                <div class="locked-data">
+                  Por ahora tu perfil solo muestra tu nombre. Podrás agregar más datos después de encontrar un match.
+                </div>
+              `
+          }
+        </div>
+      `;
+    }
+
+    navItems.forEach(item=>{
+      item.addEventListener('click', ()=>{
+        setScreen(item.dataset.view);
+      });
+    });
+
+
+    document.getElementById('welcomeForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const value = document.getElementById('initialName').value.trim();
+      userName = value || 'Tú';
+      document.getElementById('userMatchName').textContent = userName;
+      document.getElementById('welcomeModal').classList.remove('show');
+      if(activeScreen === 'profile') renderProfile();
+    });
+
+    document.getElementById('noBtn').onclick = ()=>swipe('no');
+    document.getElementById('yesBtn').onclick = ()=>swipe('yes');
+    document.getElementById('superBtn').onclick = ()=>swipe('yes');
+    document.getElementById('writeBtn').onclick = ()=>{
+      matchModal.classList.remove('show');
+      setScreen('profile');
+    };
+    document.getElementById('keepSwiping').onclick = ()=>matchModal.classList.remove('show');
+    document.getElementById('closeMatch').onclick = ()=>matchModal.classList.remove('show');
+    document.getElementById('closeSignup').onclick = ()=>signupModal.classList.remove('show');
+    document.getElementById('Fill').onclick = ()=>{
+      const f=document.getElementById('signupForm');
+      f.elements[0].value=userName === 'Tú' ? 'Federico Von Semen' : userName;
+      f.elements[1].value='wisemenpremium@gmail.com';
+      f.elements[2].value='4242 4242 4242 4242';
+      f.elements[3].value='123';
+      f.elements[4].value='12/29';
+      f.elements[5].value='Av. Siempre Viva 742, Santiago';
+    };
+    document.getElementById('signupForm').addEventListener('submit',e=>{e.preventDefault(); alert('Pago rechazado. Wise.men recomienda intentar con la tarjeta de un adulto responsable.'); signupModal.classList.remove('show');});
+
+
+    function aplicarLogoCambiable(){
+      const logo = document.getElementById('appLogo');
+      const src = (IMAGENES_CAMBIABLES.logo || '').trim();
+      if(!src) return;
+      logo.classList.add('custom-logo');
+      logo.style.backgroundImage = `url('${src}')`;
+      logo.title = 'Logo cambiable desde IMAGENES_CAMBIABLES.logo';
+    }
+
+    aplicarLogoCambiable();
+    setScreen('swipe');
+  </script>
+</body>
+</html>
 
