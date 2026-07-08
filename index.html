@@ -404,6 +404,67 @@
       text-align:left;
     }
 
+
+    .chat-body{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .blocked-alert{
+      align-self:center;
+      width:100%;
+      padding:12px 13px;
+      border-radius:16px;
+      background:#fff0f3;
+      border:1px solid #f3c1cb;
+      color:#a03248;
+      font-size:.86rem;
+      line-height:1.35;
+      text-align:center;
+      font-weight:800;
+    }
+
+    .chat-compose{
+      margin-top:8px;
+      padding:10px;
+      display:flex;
+      grid-template-columns:none;
+      gap:8px;
+      border-top:1px solid var(--line);
+      font-family:Arial,sans-serif;
+    }
+
+    .chat-compose input{
+      flex:1;
+      min-width:0;
+      height:44px;
+      border-radius:999px;
+      padding:0 13px;
+      font-size:.9rem;
+      background:#fffaf7;
+    }
+
+    .chat-compose button{
+      width:44px;
+      height:44px;
+      border:0;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--brand),var(--brand2));
+      color:#fff;
+      font-size:1.05rem;
+      font-weight:900;
+      cursor:pointer;
+      flex:0 0 auto;
+      box-shadow:0 8px 18px rgba(229,72,102,.22);
+    }
+
+    .chat-compose button:disabled,
+    .chat-compose input:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
     @media(max-height:720px){.app{min-height:100dvh}.card{max-height:530px;min-height:450px}.actions{bottom:68px}.nameblock h2{font-size:2.08rem}.photo{height:70%}.info{height:30%}header{height:72px;padding-top:10px}.logo{width:48px;height:48px}.brand-title b{font-size:1.45rem}}
   </style>
 </head>
@@ -489,7 +550,7 @@
         <button class="close" id="closeSignup">×</button>
         <div class="signup-head">
           <h3>Actualización premium</h3>
-          <p>Para guardar los cambios de tu perfil, Wise.men necesita verificar tu método de pago.</p>
+          <p>Rellena tu información de pago para poder guardar los cambios de tu perfil.</p>
         </div>
         <form id="signupForm">
           <label>Nombre del titular<input type="text" name="nombre" placeholder="Ej: Federico Von Semen" required></label>
@@ -502,7 +563,7 @@
           <label>Dirección de facturación<textarea rows="2" placeholder="Calle, comuna, ciudad" required></textarea></label>
           <div class="tiny">Wise.men Premium: guardar cambios, ver likes y recuperar dignidad.</div>
           <button class="primary" type="submit">Pagar y guardar cambios</button>
-          <button class="secondary" type="button" id="Fill">Rellenar con datos reales</button>
+          <button class="secondary" type="button" id="Fill">Rellenar información de pago</button>
         </form>
       </div>
     </div>
@@ -522,7 +583,7 @@
       yonicua: 'yonicua.png',
       annie: 'annie.png',
       watonia: 'watonia.PNG',
-      isiFran: 'fran-isi.png'
+      isiFran: 'isi-fran.png'
     };
 
     const profiles = [
@@ -674,6 +735,14 @@
       signupModal.classList.add('show');
     }
 
+    deck.addEventListener('click', e=>{
+      if(e.target && e.target.id === 'saveProfileBtn'){
+        e.preventDefault();
+        signupModal.classList.add('show');
+      }
+    });
+
+
     navItems.forEach(item=>{
         item.classList.toggle('active', item.dataset.view === screen);
       });
@@ -749,16 +818,48 @@
             </div>
           </div>
 
-          <div class="bubble me">
-            📷 Foto
+          <div class="chat-body" id="chatBody">
+            <div class="bubble me">
+              📷 Foto
+            </div>
+
+            <div class="bubble me">
+              que opinas de esto?
+              <span class="seen">✓✓ leído</span>
+            </div>
           </div>
 
-          <div class="bubble me">
-            que opinas de esto?
-            <span class="seen">✓✓ leído</span>
-          </div>
+          <form class="chat-compose" id="chatCompose" onsubmit="sendBlockedMessage(event)">
+            <input type="text" id="chatInput" placeholder="Escribe un mensaje..." autocomplete="off">
+            <button type="submit">➤</button>
+          </form>
         </div>
       `;
+    }
+
+
+    function sendBlockedMessage(e){
+      e.preventDefault();
+
+      const input = document.getElementById('chatInput');
+      const form = document.getElementById('chatCompose');
+      const body = document.getElementById('chatBody');
+
+      if(!input || !form || !body) return;
+      if(!input.value.trim()) return;
+
+      if(!document.getElementById('blockedMessage')){
+        const warning = document.createElement('div');
+        warning.id = 'blockedMessage';
+        warning.className = 'blocked-alert';
+        warning.textContent = 'La chiquilla no puede recibir el mensaje, has sido bloqueado...';
+        body.appendChild(warning);
+      }
+
+      input.value = '';
+      input.disabled = true;
+      const button = form.querySelector('button');
+      if(button) button.disabled = true;
     }
 
     function renderProfile(){
@@ -776,7 +877,7 @@
                   <label>Edad<input type="text" placeholder="Agregar después del match"></label>
                   <label>Bio<textarea rows="3" placeholder="Escribe algo sobre ti"></textarea></label>
                   <label>Intereses<input type="text" placeholder="Ej: memes, gimnasio, café"></label>
-                  <button class="primary" type="button" onclick="openPaymentPopup()">Guardar cambios</button>
+                  <button class="primary" type="button" id="saveProfileBtn">Guardar cambios</button>
                 </div>
               `
               : `
@@ -841,4 +942,3 @@
   </script>
 </body>
 </html>
-
